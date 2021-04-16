@@ -1,0 +1,29 @@
+﻿<UserControl
+    x:Class="ContosoNotes.Controls.NotePageRenderer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ContosoNotes.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:ContosoNotes.Models"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <local:NoteItemDataTemplateSelector x:Key="NoteItemDataTemplateSelector">
+            <local:NoteItemDataTemplateSelector.TextItemTemplate>
+                <DataTemplate x:DataType="models:NoteItemModel">
+                    <local:NoteItemView NoteItem="{Binding}" />
+                </DataTemplate>
+            </local:NoteItemDataTemplateSelector.TextItemTemplate>
+            <local:NoteItemDataTemplateSelector.TaskItemTemplate>
+                <DataTemplate x:DataType="models:TaskNoteItemModel">
+                    <local:TaskNoteItemView TaskNoteItem="{Binding}" />
+                </DataTemplate>
+            </local:NoteItemDataTemplateSelector.TaskItemTemplate>
+        </local:NoteItemDataTemplateSelector>
+    </UserControl.Resources>
+    
+    <Grid>
+        <ListView ItemsSource="{Binding NotePage.NoteItems}" ItemTemplateSelector="{StaticResource NoteItemDataTemplateSelector}" />
+    </Grid>
+</UserControl>

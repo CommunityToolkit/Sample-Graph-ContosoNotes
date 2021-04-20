@@ -1,4 +1,6 @@
-﻿using ContosoNotes.Views;
+﻿using CommunityToolkit.Net.Authentication;
+using CommunityToolkit.Uwp.Authentication;
+using ContosoNotes.Views;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -48,27 +50,27 @@ namespace ContosoNotes
 
                 Window.Current.Activate();
 
-                //InitializeGlobalProvider();
+                InitializeGlobalProvider();
             }
         }
 
         /// <summary>
         /// Initialize the global authentication provider.
         /// </summary>
-        //private async void InitializeGlobalProvider()
-        //{
-        //    if (ProviderManager.Instance.GlobalProvider != null)
-        //    {
-        //        return;
-        //    }
+        private async void InitializeGlobalProvider()
+        {
+            if (ProviderManager.Instance.GlobalProvider != null)
+            {
+                return;
+            }
 
-        //    // Run on the UI thread
-        //    await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite" };
-        //        ProviderManager.Instance.GlobalProvider = new WindowsProvider();
-        //    });
-        //}
+            // Run on the UI thread
+            await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite" };
+                ProviderManager.Instance.GlobalProvider = new WindowsProvider(scopes);
+            });
+        }
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails

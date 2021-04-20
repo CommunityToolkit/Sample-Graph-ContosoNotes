@@ -77,12 +77,11 @@ namespace ContosoNotes.Views
             {
                 CurrentNotePage = new NotePageModel()
                 {
-                    PageTitle = "",
+                    PageTitle = "My Awesome Notes",
                     NoteItems = new ObservableCollection<NoteItemModel>()
                     {
                         new NoteItemModel("This is a test."),
-                        new NoteItemModel("This is another test."),
-                        new TaskNoteItemModel("This is also test."),
+                        new TaskNoteItemModel("This is also a test."),
                         new NoteItemModel("This is yet another test."),
                     }
                 };

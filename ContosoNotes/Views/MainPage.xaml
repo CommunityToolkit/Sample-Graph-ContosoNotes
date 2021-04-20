@@ -9,6 +9,22 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <controls:NotePageRenderer2 NotePage="{Binding CurrentNotePage}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <!-- Header panel -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="1">Login</Button>
+        </Grid>
+        
+        <!-- NotePage renderer -->
+        <controls:NotePageRenderer Grid.Row="1" NotePage="{Binding CurrentNotePage}" />
     </Grid>
 </Page>

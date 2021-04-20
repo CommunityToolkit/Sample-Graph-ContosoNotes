@@ -21,10 +21,16 @@ namespace ContosoNotes.Controls
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public NoteItemModel TaskNoteItem
+        public TaskNoteItemModel TaskNoteItem
         {
-            get => (NoteItemModel)GetValue(TaskNoteItemProperty);
+            get => (TaskNoteItemModel)GetValue(TaskNoteItemProperty);
             set => SetValueDP(TaskNoteItemProperty, value);
+        }
+
+        public TaskNoteItemView()
+        {
+            InitializeComponent();
+            (Content as FrameworkElement).DataContext = this;
         }
 
         private void SetValueDP(DependencyProperty property, object value, [CallerMemberName] string propertyName = null)

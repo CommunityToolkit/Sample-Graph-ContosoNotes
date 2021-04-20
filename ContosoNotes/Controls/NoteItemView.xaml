@@ -5,7 +5,17 @@
     xmlns:local="using:ContosoNotes.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance Type=local:NoteItemView}"
     mc:Ignorable="d">
 
-    <TextBox Text="{Binding NoteItem.Text}" />
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="IsSpellCheckEnabled" Value="True" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Resources>
+    
+    <TextBox Text="{Binding NoteItem.Text, Mode=TwoWay}" />
 </UserControl>

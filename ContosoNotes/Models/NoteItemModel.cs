@@ -1,12 +1,19 @@
-﻿namespace ContosoNotes.Models
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+
+namespace ContosoNotes.Models
 {
-    public class NoteItemModel
+    public class NoteItemModel : ObservableObject
     {
-        public string Text { get; set; }
+        private string _text;
+        public string Text 
+        {
+            get => _text;
+            set => SetProperty(ref _text, value);
+        }
 
         public NoteItemModel(string text = "")
         {
-            Text = text;
+            _text = text;
         }
     }
 }

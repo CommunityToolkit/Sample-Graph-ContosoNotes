@@ -6,24 +6,37 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:ContosoNotes.Models"
+    d:DataContext="{d:DesignInstance Type=local:NotePageRenderer}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <local:NoteItemDataTemplateSelector x:Key="NoteItemDataTemplateSelector">
-            <local:NoteItemDataTemplateSelector.TextItemTemplate>
-                <DataTemplate x:DataType="models:NoteItemModel">
-                    <local:NoteItemView NoteItem="{Binding}" />
-                </DataTemplate>
-            </local:NoteItemDataTemplateSelector.TextItemTemplate>
-            <local:NoteItemDataTemplateSelector.TaskItemTemplate>
-                <DataTemplate x:DataType="models:TaskNoteItemModel">
-                    <local:TaskNoteItemView TaskNoteItem="{Binding}" />
-                </DataTemplate>
-            </local:NoteItemDataTemplateSelector.TaskItemTemplate>
-        </local:NoteItemDataTemplateSelector>
+
+        <DataTemplate x:DataType="models:NoteItemModel" x:Key="TextNoteItemDataTemplate">
+            <local:NoteItemView NoteItem="{Binding}" />
+        </DataTemplate>
+
+        <DataTemplate x:DataType="models:TaskNoteItemModel" x:Key="TaskNoteItemDataTemplate">
+            <local:TaskNoteItemView TaskNoteItem="{Binding}" />
+        </DataTemplate>
+
+        <local:NoteItemDataTemplateSelector 
+            x:Key="NoteItemDataTemplateSelector"
+            TextItemTemplate="{StaticResource TextNoteItemDataTemplate}"
+            TaskItemTemplate="{StaticResource TaskNoteItemDataTemplate}" />
+
     </UserControl.Resources>
     
     <Grid>
-        <ListView ItemsSource="{Binding NotePage.NoteItems}" ItemTemplateSelector="{StaticResource NoteItemDataTemplateSelector}" />
+        <ListView 
+            ItemsSource="{Binding NotePage.NoteItems, Mode=OneWay}" 
+            ItemTemplateSelector="{StaticResource NoteItemDataTemplateSelector}"
+            SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="IsTabStop" Value="False" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
     </Grid>
 </UserControl>

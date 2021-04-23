@@ -4,17 +4,29 @@ using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Windows.System;
 
 namespace ContosoNotes.Views
 {
     public class MainViewModel : ObservableObject
     {
-        public RelayCommand OpenPaneCommand { get; }
+        public RelayCommand TogglePaneCommand { get; }
+        
+        private bool _isPaneOpen;
+        public bool IsPaneOpen
+        {
+            get => _isPaneOpen;
+            set => SetProperty(ref _isPaneOpen, value);
+        }
+
+        private bool _isSignedIn;
+        public bool IsSignedIn
+        {
+            get => _isSignedIn;
+            set => SetProperty(ref _isSignedIn, value);
+        }
 
         private NotesListModel _notesList;
         public NotesListModel NotesList
@@ -35,8 +47,10 @@ namespace ContosoNotes.Views
 
         public MainViewModel()
         {
-            OpenPaneCommand = new RelayCommand(OpenPane);
+            TogglePaneCommand = new RelayCommand(TogglePane);
 
+            _isSignedIn = ProviderManager.Instance.GlobalProvider?.State == ProviderState.SignedIn;
+            _isPaneOpen = true;
             _notesList = null;
             _currentNotePage = null;
             _localStorageHelper = new LocalObjectStorageHelper(new SystemSerializer());
@@ -50,13 +64,15 @@ namespace ContosoNotes.Views
             ProviderManager.Instance.ProviderUpdated += OnProviderUpdated;
         }
 
-        private void OpenPane()
+        private void TogglePane()
         {
-            
+            IsPaneOpen = !IsPaneOpen;
         }
 
         private void OnProviderUpdated(object sender, ProviderUpdatedEventArgs e)
         {
+            IsSignedIn = ProviderManager.Instance.GlobalProvider?.State == ProviderState.SignedIn;
+
             Load();
         }
 

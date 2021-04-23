@@ -149,6 +149,7 @@
   <ItemGroup>
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Assets\Attach.png" />
+    <Content Include="Assets\ClosePane.png" />
     <Content Include="Assets\Discard.png" />
     <Content Include="Assets\Excel.png" />
     <Content Include="Assets\Font.png" />

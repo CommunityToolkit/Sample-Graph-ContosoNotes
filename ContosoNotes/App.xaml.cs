@@ -67,7 +67,7 @@ namespace ContosoNotes
             // Run on the UI thread
             await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite" };
+                string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite", "Files.ReadWrite" };
                 ProviderManager.Instance.GlobalProvider = new WindowsProvider(scopes);
             });
         }

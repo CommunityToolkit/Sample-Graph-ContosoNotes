@@ -2,6 +2,7 @@
 using CommunityToolkit.Uwp.Graph.Helpers.RoamingSettings;
 using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Helpers;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace ContosoNotes.Views
 {
     public class MainViewModel : ObservableObject
     {
+        public RelayCommand OpenPaneCommand { get; }
+
         private NotesListModel _notesList;
         public NotesListModel NotesList
         {
@@ -27,18 +30,29 @@ namespace ContosoNotes.Views
             set => SetProperty(ref _currentNotePage, value);
         }
 
+        private IRoamingSettingsDataStore _roamingStorageHelper;
+        private IObjectStorageHelper _localStorageHelper;
+
         public MainViewModel()
         {
+            OpenPaneCommand = new RelayCommand(OpenPane);
+
             _notesList = null;
             _currentNotePage = null;
+            _localStorageHelper = new LocalObjectStorageHelper(new SystemSerializer());
 
-            KeywordDetector.Instance.RegisterKeyword("TODO:");
+            KeywordDetector.Instance.RegisterKeyword("todo:");
             KeywordDetector.Instance.KeywordDetected += OnKeywordDetected;
 
             //KeywordDetector.Instance.RegisterKey();
             //KeywordDetector.Instance.KeyDetected += OnKeyDetected;
 
             ProviderManager.Instance.ProviderUpdated += OnProviderUpdated;
+        }
+
+        private void OpenPane()
+        {
+            
         }
 
         private void OnProviderUpdated(object sender, ProviderUpdatedEventArgs e)
@@ -48,17 +62,14 @@ namespace ContosoNotes.Views
 
         public async void Load()
         {
-            IObjectStorageHelper localStorageHelper = new LocalObjectStorageHelper(new SystemSerializer());
-            IRoamingSettingsDataStore roamingStorageHelper;
-
             switch (ProviderManager.Instance.GlobalProvider?.State)
             {
                 case ProviderState.SignedIn:
-                    roamingStorageHelper = await RoamingSettingsHelper.CreateForCurrentUser(RoamingDataStore.OneDrive);
+                    _roamingStorageHelper = await RoamingSettingsHelper.CreateForCurrentUser(RoamingDataStore.OneDrive);
                     break;
 
                 case ProviderState.SignedOut:
-                    roamingStorageHelper = null;
+                    _roamingStorageHelper = null;
                     break;
 
                 case ProviderState.Loading:
@@ -71,18 +82,19 @@ namespace ContosoNotes.Views
             {
                 // We have transitioned between local and roaming data, but there is already an active NotePage with content.
                 // Save the progress (overriding any existing) and continue to use it as the current NotePage.
-                await localStorageHelper.SaveFileAsync(CurrentNotePage.Id, CurrentNotePage);
-                await roamingStorageHelper?.SaveFileAsync(CurrentNotePage.Id, CurrentNotePage);
+                await _localStorageHelper.SaveFileAsync(CurrentNotePage.Id, CurrentNotePage);
+                await _roamingStorageHelper?.SaveFileAsync(CurrentNotePage.Id, CurrentNotePage);
+
             }
 
             // Clear the notes list so we can repopulate it.
-            NotesList = null;
+            NotesList = new NotesListModel();
 
             // Put the existing noteItems in a dictionary so we can more easily inspect the list of keys/ids.
             var noteListItemsDict = new Dictionary<string, NotesListItemModel>();
 
             // Get any remote notes.
-            var remoteNotes = GetNotesList(roamingStorageHelper);
+            var remoteNotes = GetNotesList(_roamingStorageHelper);
             if (remoteNotes != null)
             {
                 foreach (var notesListItem in remoteNotes.Items)
@@ -93,7 +105,7 @@ namespace ContosoNotes.Views
             }
 
             // Get any local notes.
-            var localNotes = GetNotesList(localStorageHelper);
+            var localNotes = GetNotesList(_localStorageHelper);
             if (localNotes != null)
             {
                 foreach (var notesListItem in localNotes.Items)
@@ -106,35 +118,39 @@ namespace ContosoNotes.Views
                 }
             }
 
-            // Check the roaming settings for an active note page.
-            if (CurrentNotePage == null && roamingStorageHelper != null)
+            // If we have notes in the list, attempt to pull the active/current note page.
+            if (NotesList.Items.Count > 0)
             {
-                string currentNotePageId = roamingStorageHelper.Read<string>("currentNotePageId");
-                if (currentNotePageId != null)
+                // Check the roaming settings for an active note page.
+                if (CurrentNotePage == null && _roamingStorageHelper != null)
                 {
-                    foreach (var notePage in NotesList.Items)
+                    string currentNotePageId = _roamingStorageHelper.Read<string>("currentNotePageId");
+                    if (currentNotePageId != null)
                     {
-                        if (currentNotePageId == notePage.NotePageId)
+                        foreach (var notePage in NotesList.Items)
                         {
-                            CurrentNotePage = await roamingStorageHelper.ReadFileAsync<NotePageModel>(notePage.NotePageFileName);
-                            break;
+                            if (currentNotePageId == notePage.NotePageId)
+                            {
+                                CurrentNotePage = await _roamingStorageHelper.ReadFileAsync<NotePageModel>(notePage.NotePageFileName);
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-            // Check the local settings for an active note page.
-            if (CurrentNotePage == null)
-            {
-                string currentNotePageId = localStorageHelper.Read<string>("currentNotePageId");
-                if (currentNotePageId != null)
+                // Check the local settings for an active note page.
+                if (CurrentNotePage == null)
                 {
-                    foreach (var notePage in NotesList.Items)
+                    string currentNotePageId = _localStorageHelper.Read<string>("currentNotePageId");
+                    if (currentNotePageId != null)
                     {
-                        if (currentNotePageId == notePage.NotePageId)
+                        foreach (var notePage in NotesList.Items)
                         {
-                            CurrentNotePage = await localStorageHelper.ReadFileAsync<NotePageModel>(notePage.NotePageFileName);
-                            break;
+                            if (currentNotePageId == notePage.NotePageId)
+                            {
+                                CurrentNotePage = await _localStorageHelper.ReadFileAsync<NotePageModel>(notePage.NotePageFileName);
+                                break;
+                            }
                         }
                     }
                 }
@@ -142,10 +158,10 @@ namespace ContosoNotes.Views
 
             if (CurrentNotePage != null)
             {
-                localStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
-                if (roamingStorageHelper != null)
+                _localStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
+                if (_roamingStorageHelper != null)
                 {
-                    roamingStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
+                    _roamingStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
                 }
             }
             else
@@ -163,7 +179,29 @@ namespace ContosoNotes.Views
 
         public async void Save()
         {
+            // Handle any existing NotePage
+            if (_currentNotePage != null && !_currentNotePage.IsEmpty)
+            {
+                // We have transitioned between local and roaming data, but there is already an active NotePage with content.
+                // Save the progress (overriding any existing) and continue to use it as the current NotePage.
+                await _localStorageHelper.SaveFileAsync(_currentNotePage.Id, _currentNotePage);
 
+                if (_roamingStorageHelper != null)
+                {
+                    await _roamingStorageHelper.SaveFileAsync(_currentNotePage.Id, _currentNotePage);
+                }
+            }
+
+            // Update the NotesList
+            if (_notesList != null && _notesList.Items.Count > 0)
+            {
+                _localStorageHelper.Save("notesList", NotesList);
+
+                if (_roamingStorageHelper != null)
+                {
+                    _roamingStorageHelper.Save("notesList", NotesList);
+                }
+            }
         }
 
         private NotesListModel GetNotesList(IObjectStorageHelper storageHelper)

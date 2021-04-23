@@ -27,7 +27,18 @@
     </UserControl.Resources>
     
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBox 
+            BorderThickness="0"
+            Text="{Binding NotePage.PageTitle, Mode=TwoWay}"
+            FontWeight="SemiBold"
+            PlaceholderText="Title"
+            VerticalAlignment="Center" />
         <ListView 
+            Grid.Row="1"
             ItemsSource="{Binding NotePage.NoteItems, Mode=OneWay}" 
             ItemTemplateSelector="{StaticResource NoteItemDataTemplateSelector}"
             SelectionMode="None">

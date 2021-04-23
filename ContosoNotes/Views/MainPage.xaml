@@ -11,32 +11,71 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <Style TargetType="Button" x:Key="CustomButtonStyle">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Width" Value="36" />
+        </Style>
+    </Page.Resources>
+    
     <Grid>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        
+
         <!-- Header panel -->
         <Grid BorderThickness="0, 0, 0, 1" BorderBrush="{ThemeResource SystemAccentColor}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- NotePage title-->
-            <TextBox 
-                BorderThickness="0"
-                Text="{Binding CurrentNotePage.PageTitle, Mode=TwoWay}"
-                FontWeight="SemiBold"
-                Margin="10, 0, 0, 0"
-                PlaceholderText="Title"
-                VerticalAlignment="Center" />
+            <Button 
+                Command="{Binding OpenPaneCommand}"
+                Style="{StaticResource CustomButtonStyle}">
+                <Image Source="ms-appx:///Assets/OpenPane.png" />
+            </Button>
             
-            <!-- Login button -->
-            <graphcontrols:LoginButton Grid.Column="1" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/Translate.png" />
+                </Button>
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/Font.png" />
+                </Button>
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/Discard.png" />
+                </Button>
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/Attach.png" />
+                </Button>
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/More.png" />
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Column="3" Orientation="Horizontal">
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/Outlook.png" />
+                </Button>
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/Todo.png" />
+                </Button>
+                <Button Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/Excel.png" />
+                </Button>
+            </StackPanel>
+
+            <graphcontrols:LoginButton Grid.Column="4" />
         </Grid>
-        
+
         <!-- NotePage renderer -->
         <ui:NotePageRenderer Grid.Row="1" NotePage="{Binding CurrentNotePage}" />
     </Grid>

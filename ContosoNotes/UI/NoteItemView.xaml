@@ -1,8 +1,8 @@
 ﻿<UserControl
-    x:Class="ContosoNotes.Controls.NoteItemView"
+    x:Class="ContosoNotes.UI.NoteItemView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ContosoNotes.Controls"
+    xmlns:local="using:ContosoNotes.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DataContext="{d:DesignInstance Type=local:NoteItemView}"
@@ -17,5 +17,9 @@
         </Style>
     </UserControl.Resources>
     
-    <TextBox Text="{Binding NoteItem.Text, Mode=TwoWay}" />
+    <TextBox
+        TextChanging="TextBox_TextChanging"
+        KeyUp="NoteItemTextBox_KeyUp"
+        Name="NoteItemTextBox" 
+        PlaceholderText="Notes go here..." />
 </UserControl>

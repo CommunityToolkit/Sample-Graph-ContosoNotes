@@ -5,7 +5,7 @@
     xmlns:local="using:ContosoNotes.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:controls="using:ContosoNotes.Controls"
+    xmlns:ui="using:ContosoNotes.UI"
     xmlns:graphcontrols="using:CommunityToolkit.Uwp.Graph.Controls"
     d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
     mc:Ignorable="d"
@@ -18,20 +18,26 @@
         </Grid.RowDefinitions>
         
         <!-- Header panel -->
-        <Grid>
+        <Grid BorderThickness="0, 0, 0, 1" BorderBrush="{ThemeResource SystemAccentColor}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!-- NotePage title-->
-            <TextBlock Text="{Binding CurrentNotePage.PageTitle}" />
+            <TextBox 
+                BorderThickness="0"
+                Text="{Binding CurrentNotePage.PageTitle, Mode=TwoWay}"
+                FontWeight="SemiBold"
+                Margin="10, 0, 0, 0"
+                PlaceholderText="Title"
+                VerticalAlignment="Center" />
             
             <!-- Login button -->
             <graphcontrols:LoginButton Grid.Column="1" />
         </Grid>
         
         <!-- NotePage renderer -->
-        <controls:NotePageRenderer Grid.Row="1" NotePage="{Binding CurrentNotePage}" />
+        <ui:NotePageRenderer Grid.Row="1" NotePage="{Binding CurrentNotePage}" />
     </Grid>
 </Page>

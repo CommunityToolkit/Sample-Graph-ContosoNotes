@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace ContosoNotes.Controls
+namespace ContosoNotes.UI
 {
     public sealed partial class TaskNoteItemView : UserControl, INotifyPropertyChanged
     {

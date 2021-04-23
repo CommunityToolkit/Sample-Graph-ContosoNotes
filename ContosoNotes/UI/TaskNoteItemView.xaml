@@ -1,8 +1,8 @@
 ﻿<UserControl
-    x:Class="ContosoNotes.Controls.TaskNoteItemView"
+    x:Class="ContosoNotes.UI.TaskNoteItemView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ContosoNotes.Controls"
+    xmlns:local="using:ContosoNotes.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DataContext="{d:DesignInstance Type=local:TaskNoteItemView}"
@@ -10,7 +10,7 @@
 
     <UserControl.Resources>
         <Style TargetType="TextBox">
-            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="AcceptsReturn" Value="False" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="IsSpellCheckEnabled" Value="True" />
             <Setter Property="TextWrapping" Value="Wrap" />

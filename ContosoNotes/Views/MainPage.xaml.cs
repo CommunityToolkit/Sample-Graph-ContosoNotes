@@ -16,7 +16,7 @@ namespace ContosoNotes.Views
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ViewModel.Load(e.Parameter);
+            ViewModel.Load();
         }
     }
 }

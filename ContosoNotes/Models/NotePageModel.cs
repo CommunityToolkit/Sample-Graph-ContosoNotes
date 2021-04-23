@@ -23,6 +23,8 @@ namespace ContosoNotes.Models
             set => SetProperty(ref _noteItems, value);
         }
 
+        public bool IsEmpty => _noteItems == null || _noteItems.Count == 0 || (_noteItems.Count == 1 && string.IsNullOrWhiteSpace(_noteItems[0].Text));
+
         public NotePageModel(string id = null, string pageTitle = null, IEnumerable<NoteItemModel> noteItems = null)
         {
             Id = id ?? Guid.NewGuid().ToString();

@@ -154,10 +154,13 @@
     <Content Include="Assets\Excel.png" />
     <Content Include="Assets\Font.png" />
     <Content Include="Assets\More.png" />
+    <Content Include="Assets\NewNote.png" />
     <Content Include="Assets\OpenPane.png" />
     <Content Include="Assets\Outlook.png" />
+    <Content Include="Assets\Redo.png" />
     <Content Include="Assets\Todo.png" />
     <Content Include="Assets\Translate.png" />
+    <Content Include="Assets\Undo.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

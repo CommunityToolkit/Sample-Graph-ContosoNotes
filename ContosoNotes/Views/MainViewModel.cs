@@ -170,6 +170,12 @@ namespace ContosoNotes.Views
                         }
                     }
                 }
+
+                // Try to grab the first note page.
+                if (CurrentNotePage == null && _notesList.Items.Count > 0)
+                {
+                    CurrentNotePage = await _localStorageHelper.ReadFileAsync<NotePageModel>(_notesList.Items[0].NotePageFileName);
+                }
             }
 
             if (CurrentNotePage != null)
@@ -185,11 +191,18 @@ namespace ContosoNotes.Views
                 // Create a new empty NotePageModel, with a fresh item ready for input
                 CurrentNotePage = new NotePageModel()
                 {
+                    PageTitle = "New note",
                     NoteItems = new ObservableCollection<NoteItemModel>()
                     {
                         new NoteItemModel()
                     }
                 };
+
+                NotesList.Items.Add(new NotesListItemModel()
+                {
+                    NotePageId = CurrentNotePage.Id,
+                    NotePageTitle = CurrentNotePage.PageTitle,
+                });
             }
         }
 
@@ -253,7 +266,7 @@ namespace ContosoNotes.Views
                 var noteItem = sender as NoteItemModel;
 
                 // Handle any registered keywords.
-                if (e.Keyword == "TODO:")
+                if (e.Keyword == "todo:")
                 {
                     var noteItemIndex = CurrentNotePage.NoteItems.IndexOf(noteItem);
 

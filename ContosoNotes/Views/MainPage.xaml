@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:ui="using:ContosoNotes.UI"
-    xmlns:graphcontrols="using:CommunityToolkit.Uwp.Graph.Controls" xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
+    xmlns:graphcontrols="using:CommunityToolkit.Uwp.Graph.Controls" xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters" xmlns:models="using:ContosoNotes.Models"
     d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -101,11 +101,23 @@
                 <RowDefinition Height="48" />
             </Grid.RowDefinitions>
 
-            <!-- List of notes goes here -->
+            <!-- List of notes -->
+            <ListView ItemsSource="{Binding NotesList.Items}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:NotesListItemModel">
+                        <Grid>
+                            <TextBlock Text="{Binding NotePageTitle}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
             
             <!-- Notes list footer panel -->
             <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Button>New page</Button>
+                <Button
+                    Style="{StaticResource CustomButtonStyle}">
+                    <Image Source="ms-appx:///Assets/NewNote.png" />
+                </Button>
             </StackPanel>
         </Grid>
         
@@ -127,9 +139,18 @@
                 </Grid.ColumnDefinitions>
                 
                 <StackPanel Orientation="Horizontal">
-                    <Button Visibility="{Binding IsPaneOpen, Converter={StaticResource InverseBoolToVisibilityConverter}}">New page</Button>
-                    <Button>Undo</Button>
-                    <Button>Redo</Button>
+                    <Button
+                        Style="{StaticResource CustomButtonStyle}"
+                        Visibility="{Binding IsPaneOpen, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                        <Image Source="ms-appx:///Assets/NewNote.png" />
+                    </Button>
+                    <Button
+                        Style="{StaticResource CustomButtonStyle}">
+                        <Image Source="ms-appx:///Assets/Undo.png" />
+                    </Button>
+                    <Button Style="{StaticResource CustomButtonStyle}">
+                        <Image Source="ms-appx:///Assets/Redo.png" />
+                    </Button>
                 </StackPanel>
 
                 <!-- Sync indicator -->

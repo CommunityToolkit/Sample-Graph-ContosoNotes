@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Net.Authentication;
 using CommunityToolkit.Uwp.Graph.Helpers.RoamingSettings;
+using ContosoNotes.Common;
 using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Windows.System;
 
 namespace ContosoNotes.Views
@@ -13,7 +16,8 @@ namespace ContosoNotes.Views
     public class MainViewModel : ObservableObject
     {
         public RelayCommand TogglePaneCommand { get; }
-        
+        public RelayCommand SaveCommand { get; }
+
         private bool _isPaneOpen;
         public bool IsPaneOpen
         {
@@ -28,8 +32,8 @@ namespace ContosoNotes.Views
             set => SetProperty(ref _isSignedIn, value);
         }
 
-        private NotesListModel _notesList;
-        public NotesListModel NotesList
+        private ObservableCollection<NotesListItemModel> _notesList;
+        public ObservableCollection<NotesListItemModel> NotesList
         {
             get => _notesList;
             set => SetProperty(ref _notesList, value);
@@ -48,6 +52,7 @@ namespace ContosoNotes.Views
         public MainViewModel()
         {
             TogglePaneCommand = new RelayCommand(TogglePane);
+            SaveCommand = new RelayCommand(Save);
 
             _isSignedIn = ProviderManager.Instance.GlobalProvider?.State == ProviderState.SignedIn;
             _isPaneOpen = true;
@@ -81,7 +86,8 @@ namespace ContosoNotes.Views
             switch (ProviderManager.Instance.GlobalProvider?.State)
             {
                 case ProviderState.SignedIn:
-                    _roamingStorageHelper = await RoamingSettingsHelper.CreateForCurrentUser(RoamingDataStore.OneDrive);
+                    _roamingStorageHelper = await RoamingSettingsHelper.CreateForCurrentUser(RoamingDataStore.OneDrive, syncOnInit: false);
+                    await _roamingStorageHelper.Sync();
                     break;
 
                 case ProviderState.SignedOut:
@@ -94,60 +100,74 @@ namespace ContosoNotes.Views
             }
 
             // Handle any existing NotePage
-            if (CurrentNotePage != null && !CurrentNotePage.IsEmpty)
+            if (CurrentNotePage != null)
             {
-                // We have transitioned between local and roaming data, but there is already an active NotePage with content.
-                // Save the progress (overriding any existing) and continue to use it as the current NotePage.
-                await _localStorageHelper.SaveFileAsync(CurrentNotePage.Id, CurrentNotePage);
-                await _roamingStorageHelper?.SaveFileAsync(CurrentNotePage.Id, CurrentNotePage);
-
+                if (CurrentNotePage.IsEmpty)
+                {
+                    CurrentNotePage = null;
+                }
+                else 
+                {
+                    // We have transitioned between local and roaming data, but there is already an active NotePage with content.
+                    // Save the progress (overriding any existing) and continue to use it as the current NotePage.
+                    await SaveCurrentNotePageAsync();
+                }
             }
 
             // Clear the notes list so we can repopulate it.
-            NotesList = new NotesListModel();
+            NotesList = new ObservableCollection<NotesListItemModel>();
 
-            // Put the existing noteItems in a dictionary so we can more easily inspect the list of keys/ids.
-            var noteListItemsDict = new Dictionary<string, NotesListItemModel>();
+            var notesListItemsDict = new Dictionary<string, int>();
 
             // Get any remote notes.
-            var remoteNotes = GetNotesList(_roamingStorageHelper);
+            var remoteNotes = await GetNotesListAsync(_roamingStorageHelper);
             if (remoteNotes != null)
             {
-                foreach (var notesListItem in remoteNotes.Items)
+                for (var i = 0; i < remoteNotes.Items.Count; i++)
                 {
-                    NotesList.Items.Add(notesListItem);
-                    noteListItemsDict.Add(notesListItem.NotePageId, notesListItem);
+                    var notesListItem = remoteNotes.Items[i];
+                    NotesList.Add(notesListItem);
+                    notesListItemsDict.Add(notesListItem.NotePageId, i);
                 }
             }
 
             // Get any local notes.
-            var localNotes = GetNotesList(_localStorageHelper);
+            var localNotes = await GetNotesListAsync(_localStorageHelper);
             if (localNotes != null)
             {
+                bool updateNotesList = false;
                 foreach (var notesListItem in localNotes.Items)
                 {
-                    if (!noteListItemsDict.ContainsKey(notesListItem.NotePageId))
+                    if (!notesListItemsDict.ContainsKey(notesListItem.NotePageId))
                     {
-                        NotesList.Items.Add(notesListItem);
-                        // TODO: Sync these notes back to the remote, if available.
+                        NotesList.Add(notesListItem);
+
+                        // Sync these notes back to the remote, if available.
+                        updateNotesList = true;
                     }
+                }
+
+                if (updateNotesList)
+                {
+                    await SaveNotesListAsync();
                 }
             }
 
             // If we have notes in the list, attempt to pull the active/current note page.
-            if (NotesList.Items.Count > 0)
+            if (NotesList.Count > 0)
             {
                 // Check the roaming settings for an active note page.
                 if (CurrentNotePage == null && _roamingStorageHelper != null)
                 {
-                    string currentNotePageId = _roamingStorageHelper.Read<string>("currentNotePageId");
+                    string currentNotePageId = _roamingStorageHelper.Cache["currentNotePageId"].ToString();
                     if (currentNotePageId != null)
                     {
-                        foreach (var notePage in NotesList.Items)
+                        foreach (var notesListItem in NotesList)
                         {
-                            if (currentNotePageId == notePage.NotePageId)
+                            if (currentNotePageId == notesListItem.NotePageId)
                             {
-                                CurrentNotePage = await _roamingStorageHelper.ReadFileAsync<NotePageModel>(notePage.NotePageFileName);
+                                string notePageFileName = GetNotePageFileName(notesListItem);
+                                CurrentNotePage = await _roamingStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
                                 break;
                             }
                         }
@@ -160,11 +180,12 @@ namespace ContosoNotes.Views
                     string currentNotePageId = _localStorageHelper.Read<string>("currentNotePageId");
                     if (currentNotePageId != null)
                     {
-                        foreach (var notePage in NotesList.Items)
+                        foreach (var notesListItem in NotesList)
                         {
-                            if (currentNotePageId == notePage.NotePageId)
+                            if (currentNotePageId == notesListItem.NotePageId)
                             {
-                                CurrentNotePage = await _localStorageHelper.ReadFileAsync<NotePageModel>(notePage.NotePageFileName);
+                                string notePageFileName = GetNotePageFileName(notesListItem);
+                                CurrentNotePage = await _localStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
                                 break;
                             }
                         }
@@ -172,19 +193,17 @@ namespace ContosoNotes.Views
                 }
 
                 // Try to grab the first note page.
-                if (CurrentNotePage == null && _notesList.Items.Count > 0)
+                if (CurrentNotePage == null && _notesList.Count > 0)
                 {
-                    CurrentNotePage = await _localStorageHelper.ReadFileAsync<NotePageModel>(_notesList.Items[0].NotePageFileName);
+                    string notePageFileName = GetNotePageFileName(_notesList[0]);
+                    CurrentNotePage = await _localStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
                 }
             }
 
             if (CurrentNotePage != null)
             {
-                _localStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
-                if (_roamingStorageHelper != null)
-                {
-                    _roamingStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
-                }
+                // Just making sure we are all synced up.
+                await SaveCurrentNotePageAsync();
             }
             else
             {
@@ -198,7 +217,7 @@ namespace ContosoNotes.Views
                     }
                 };
 
-                NotesList.Items.Add(new NotesListItemModel()
+                NotesList.Add(new NotesListItemModel()
                 {
                     NotePageId = CurrentNotePage.Id,
                     NotePageTitle = CurrentNotePage.PageTitle,
@@ -208,32 +227,59 @@ namespace ContosoNotes.Views
 
         public async void Save()
         {
-            // Handle any existing NotePage
-            if (_currentNotePage != null && !_currentNotePage.IsEmpty)
-            {
-                // We have transitioned between local and roaming data, but there is already an active NotePage with content.
-                // Save the progress (overriding any existing) and continue to use it as the current NotePage.
-                await _localStorageHelper.SaveFileAsync(_currentNotePage.Id, _currentNotePage);
-
-                if (_roamingStorageHelper != null)
-                {
-                    await _roamingStorageHelper.SaveFileAsync(_currentNotePage.Id, _currentNotePage);
-                }
-            }
+            // Save any existing NotePage
+            await SaveCurrentNotePageAsync();
 
             // Update the NotesList
-            if (_notesList != null && _notesList.Items.Count > 0)
+            await SaveNotesListAsync();
+        }
+
+        private async Task SaveCurrentNotePageAsync()
+        {
+            if (_currentNotePage != null && !_currentNotePage.IsEmpty)
             {
-                _localStorageHelper.Save("notesList", NotesList);
+                string notePageFileName = GetNotePageFileName(_currentNotePage);
+
+                // We have transitioned between local and roaming data, but there is already an active NotePage with content.
+                // Save the progress (overriding any existing) and continue to use it as the current NotePage.
+                await _localStorageHelper.SaveFileAsync(notePageFileName, _currentNotePage);
+                _localStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
 
                 if (_roamingStorageHelper != null)
                 {
-                    _roamingStorageHelper.Save("notesList", NotesList);
+                    await _roamingStorageHelper.SaveFileAsync(notePageFileName, _currentNotePage);
+                    _roamingStorageHelper.Save("currentNotePageId", CurrentNotePage.Id);
                 }
             }
         }
 
-        private NotesListModel GetNotesList(IObjectStorageHelper storageHelper)
+        private async Task SaveNotesListAsync()
+        {
+            if (_notesList != null && _notesList.Count > 0)
+            {
+                // Update the title for the current note page for display in the notes list.
+                foreach (var notesListItem in NotesList)
+                {
+                    if (notesListItem.NotePageId == _currentNotePage.Id)
+                    {
+                        notesListItem.NotePageTitle = _currentNotePage.PageTitle;
+                        break;
+                    }
+                }
+
+                const string notesListFileName = "notesList.json";
+                NotesListModel notesListModel = new NotesListModel(_notesList);
+
+                await _localStorageHelper.SaveFileAsync(notesListFileName, notesListModel);
+
+                if (_roamingStorageHelper != null)
+                {
+                    await _roamingStorageHelper.SaveFileAsync(notesListFileName, notesListModel);
+                }
+            }
+        }
+
+        private async Task<NotesListModel> GetNotesListAsync(IObjectStorageHelper storageHelper)
         {
             if (storageHelper == null)
             {
@@ -241,22 +287,17 @@ namespace ContosoNotes.Views
             }
 
             // Get the list of stored notes.
-            string notesListKey = "notesList";
-            var notesListExists = storageHelper.KeyExists(notesListKey);
-            if (notesListExists)
+            string notesListFileName = "notesList.json";
+            
+            try
             {
-                try
-                {
-                    NotesListModel notesList = storageHelper.Read<NotesListModel>(notesListKey);
-                    return notesList;
-                }
-                catch
-                {
-                    return null;
-                }
+                NotesListModel notesList = await storageHelper.ReadFileAsync<NotesListModel>(notesListFileName);
+                return notesList;
             }
-
-            return new NotesListModel();
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         private void OnKeywordDetected(object sender, KeywordDetectedEventArgs e)
@@ -297,6 +338,16 @@ namespace ContosoNotes.Views
         private void OnKeyDetected(object sender, KeyDetectedEventArgs e)
         {
             
+        }
+
+        private string GetNotePageFileName(NotePageModel notePage)
+        {
+            return notePage.Id + ".json";
+        }
+
+        private string GetNotePageFileName(NotesListItemModel notesListItem)
+        {
+            return notesListItem.NotePageId + ".json";
         }
     }
 }

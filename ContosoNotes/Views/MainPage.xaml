@@ -69,7 +69,9 @@
                 <Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Attach.png" />
                 </Button>
-                <Button Style="{StaticResource CustomButtonStyle}">
+                <Button 
+                    Command="{Binding SaveCommand}"
+                    Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/More.png" />
                 </Button>
             </StackPanel>
@@ -102,7 +104,7 @@
             </Grid.RowDefinitions>
 
             <!-- List of notes -->
-            <ListView ItemsSource="{Binding NotesList.Items}">
+            <ListView ItemsSource="{Binding NotesList}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:NotesListItemModel">
                         <Grid>

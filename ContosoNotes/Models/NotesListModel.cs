@@ -1,23 +1,25 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace ContosoNotes.Models
 {
     public class NotesListModel : ObservableObject
     {
-        private ObservableCollection<NotesListItemModel> _items;
-        public ObservableCollection<NotesListItemModel> Items 
+        private IList<NotesListItemModel> _items;
+        public IList<NotesListItemModel> Items 
         {
             get => _items;
             set => SetProperty(ref _items, value);
         }
 
-        public NotesListModel(IEnumerable<NotesListItemModel> items = null)
+        public NotesListModel()
         {
-            _items = items != null
-                ? new ObservableCollection<NotesListItemModel>(items)
-                : new ObservableCollection<NotesListItemModel>();
+            _items = new List<NotesListItemModel>();
+        }
+
+        public NotesListModel(IEnumerable<NotesListItemModel> items)
+        {
+            _items = new List<NotesListItemModel>(items);
         }
     }
 }

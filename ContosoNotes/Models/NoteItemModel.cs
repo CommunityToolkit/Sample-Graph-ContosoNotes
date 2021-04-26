@@ -11,7 +11,11 @@ namespace ContosoNotes.Models
             set => SetProperty(ref _text, value);
         }
 
-        public NoteItemModel(string text = "")
+        public NoteItemModel()
+        {
+        }
+
+        public NoteItemModel(string text = null)
         {
             _text = text;
         }

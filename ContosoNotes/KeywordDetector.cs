@@ -46,7 +46,7 @@ namespace ContosoNotes
 
             foreach (string keyword in Keywords)
             {
-                if (text.Contains(keyword))
+                if (text.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
                 {
                     string preText = text.Substring(0, text.IndexOf(keyword));
                     string postText = text.Substring(text.IndexOf(keyword) + keyword.Length);
@@ -62,7 +62,11 @@ namespace ContosoNotes
             {
                 string text = noteItem.Text;
                 string preText = text.Substring(0, index);
-                string postText = text.Substring(index + 1);
+                string postText = string.Empty;
+                if (index < text.Length)
+                {
+                    postText = text.Substring(index + 1);
+                }
 
                 KeyDetected?.Invoke(noteItem, new KeyDetectedEventArgs(key, preText, postText));
             }

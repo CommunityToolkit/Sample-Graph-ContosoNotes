@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Net.Authentication;
 using CommunityToolkit.Uwp.Graph.Helpers.RoamingSettings;
-using ContosoNotes.Common;
 using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -294,7 +293,7 @@ namespace ContosoNotes.Views
                 NotesListModel notesList = await storageHelper.ReadFileAsync<NotesListModel>(notesListFileName);
                 return notesList;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }

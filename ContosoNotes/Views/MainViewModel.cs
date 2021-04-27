@@ -332,7 +332,7 @@ namespace ContosoNotes.Views
                 if (!string.IsNullOrEmpty(e.PostText))
                 {
                     // Check if we have a text note next to pre-pend with our split
-                    if (++noteItemIndex < CurrentNotePage.NoteItems.Count)
+                    if (++noteItemIndex < CurrentNotePage.NoteItems.Count && CurrentNotePage.NoteItems[noteItemIndex] is not TaskNoteItemModel)
                     {
                         var note = CurrentNotePage.NoteItems[noteItemIndex];
                         note.Text = e.PostText + note.Text;

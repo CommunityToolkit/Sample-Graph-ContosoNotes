@@ -45,13 +45,6 @@ namespace ContosoNotes.Views
             set => SetProperty(ref _currentNotePage, value);
         }
 
-        private ObservableCollection<NoteItemModel> _noteItems;
-        public ObservableCollection<NoteItemModel> NoteItems
-        {
-            get => _noteItems;
-            set => SetProperty(ref _noteItems, value);
-        }
-
         private IRoamingSettingsDataStore _roamingStorageHelper;
         private readonly IObjectStorageHelper _localStorageHelper;
         private readonly IObjectSerializer _serializer;

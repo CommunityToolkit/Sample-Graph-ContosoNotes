@@ -258,13 +258,16 @@ namespace ContosoNotes.Views
         {
             if (_notesList != null && _notesList.Items.Count > 0)
             {
-                // Update the title for the current note page for display in the notes list.
-                foreach (var notesListItem in NotesList.Items)
+                if (_currentNotePage != null)
                 {
-                    if (notesListItem.NotePageId == _currentNotePage.Id)
+                    // Update the title for the current note page for display in the notes list.
+                    foreach (var notesListItem in NotesList.Items)
                     {
-                        notesListItem.NotePageTitle = _currentNotePage.PageTitle;
-                        break;
+                        if (notesListItem.NotePageId == _currentNotePage.Id)
+                        {
+                            notesListItem.NotePageTitle = _currentNotePage.PageTitle;
+                            break;
+                        }
                     }
                 }
 

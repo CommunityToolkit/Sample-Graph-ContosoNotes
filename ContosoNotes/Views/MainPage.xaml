@@ -104,7 +104,7 @@
             </Grid.RowDefinitions>
 
             <!-- List of notes -->
-            <ListView ItemsSource="{Binding NotesList}">
+            <ListView ItemsSource="{Binding NotesList.Items}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:NotesListItemModel">
                         <Grid>
@@ -130,7 +130,7 @@
             </Grid.RowDefinitions>
             
             <!-- Note page renderer -->
-            <ui:NotePageRenderer  NotePage="{Binding CurrentNotePage}" />
+            <ui:NotePageRenderer NotePage="{Binding CurrentNotePage}" />
 
             <!-- Note page footer panel -->
             <Grid Grid.Row="1">

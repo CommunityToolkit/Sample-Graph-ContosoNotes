@@ -1,12 +1,13 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ContosoNotes.Models
 {
     public class NotesListModel : ObservableObject
     {
-        private IList<NotesListItemModel> _items;
-        public IList<NotesListItemModel> Items 
+        private ObservableCollection<NotesListItemModel> _items;
+        public ObservableCollection<NotesListItemModel> Items 
         {
             get => _items;
             set => SetProperty(ref _items, value);
@@ -14,12 +15,12 @@ namespace ContosoNotes.Models
 
         public NotesListModel()
         {
-            _items = new List<NotesListItemModel>();
+            _items = new ObservableCollection<NotesListItemModel>();
         }
 
         public NotesListModel(IEnumerable<NotesListItemModel> items)
         {
-            _items = new List<NotesListItemModel>(items);
+            _items = new ObservableCollection<NotesListItemModel>(items);
         }
     }
 }

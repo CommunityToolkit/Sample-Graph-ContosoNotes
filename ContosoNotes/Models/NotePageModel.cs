@@ -1,6 +1,7 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ContosoNotes.Models
 {
@@ -15,8 +16,8 @@ namespace ContosoNotes.Models
             set => SetProperty(ref _pageTitle, value);
         }
 
-        private IList<NoteItemModel> _noteItems;
-        public IList<NoteItemModel> NoteItems 
+        private ObservableCollection<NoteItemModel> _noteItems;
+        public ObservableCollection<NoteItemModel> NoteItems 
         {
             get => _noteItems;
             set => SetProperty(ref _noteItems, value);
@@ -27,14 +28,14 @@ namespace ContosoNotes.Models
         public NotePageModel()
         {
             Id = Guid.NewGuid().ToString();
-            NoteItems = new List<NoteItemModel>();
+            NoteItems = new ObservableCollection<NoteItemModel>();
         }
 
         public NotePageModel(string id = null, string pageTitle = null, IEnumerable<NoteItemModel> noteItems = null)
         {
             Id = id ?? Guid.NewGuid().ToString();
             PageTitle = pageTitle;
-            NoteItems = noteItems != null ? new List<NoteItemModel>(noteItems) : new List<NoteItemModel>();
+            NoteItems = noteItems != null ? new ObservableCollection<NoteItemModel>(noteItems) : new ObservableCollection<NoteItemModel>();
         }
     }
 }

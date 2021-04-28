@@ -119,6 +119,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\JsonObjectSerializer.cs" />
     <Compile Include="Models\NotesListItemModel.cs" />
     <Compile Include="Models\NotesListModel.cs" />
     <Compile Include="UI\NoteItemDataTemplateSelector.cs" />
@@ -194,13 +195,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Net.Authentication">
-      <Version>7.0.0-build.85.g505aa67f96</Version>
+      <Version>7.0.0-build.85.gb97f6d5569</Version>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Uwp.Authentication">
-      <Version>7.0.0-build.85.g505aa67f96</Version>
+      <Version>7.0.0-build.85.gb97f6d5569</Version>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Uwp.Graph.Controls">
-      <Version>7.0.0-build.85.g505aa67f96</Version>
+      <Version>7.0.0-build.85.gb97f6d5569</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
@@ -215,6 +216,7 @@
       <Version>7.0.1</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Net.Authentication;
 using CommunityToolkit.Uwp.Graph.Helpers.RoamingSettings;
+using ContosoNotes.Common;
 using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -31,8 +31,8 @@ namespace ContosoNotes.Views
             set => SetProperty(ref _isSignedIn, value);
         }
 
-        private ObservableCollection<NotesListItemModel> _notesList;
-        public ObservableCollection<NotesListItemModel> NotesList
+        private NotesListModel _notesList;
+        public NotesListModel NotesList
         {
             get => _notesList;
             set => SetProperty(ref _notesList, value);
@@ -45,8 +45,16 @@ namespace ContosoNotes.Views
             set => SetProperty(ref _currentNotePage, value);
         }
 
+        private ObservableCollection<NoteItemModel> _noteItems;
+        public ObservableCollection<NoteItemModel> NoteItems
+        {
+            get => _noteItems;
+            set => SetProperty(ref _noteItems, value);
+        }
+
         private IRoamingSettingsDataStore _roamingStorageHelper;
-        private IObjectStorageHelper _localStorageHelper;
+        private readonly IObjectStorageHelper _localStorageHelper;
+        private readonly IObjectSerializer _serializer;
 
         public MainViewModel()
         {
@@ -57,7 +65,8 @@ namespace ContosoNotes.Views
             _isPaneOpen = true;
             _notesList = null;
             _currentNotePage = null;
-            _localStorageHelper = new LocalObjectStorageHelper(new SystemSerializer());
+            _serializer = new JsonObjectSerializer();
+            _localStorageHelper = new LocalObjectStorageHelper(_serializer);
 
             KeywordDetector.Instance.RegisterKeyword("todo:");
             KeywordDetector.Instance.KeywordDetected += OnKeywordDetected;
@@ -85,7 +94,7 @@ namespace ContosoNotes.Views
             switch (ProviderManager.Instance.GlobalProvider?.State)
             {
                 case ProviderState.SignedIn:
-                    _roamingStorageHelper = await RoamingSettingsHelper.CreateForCurrentUser(RoamingDataStore.OneDrive, syncOnInit: false);
+                    _roamingStorageHelper = await RoamingSettingsHelper.CreateForCurrentUser(RoamingDataStore.OneDrive, false, true, _serializer);
                     await _roamingStorageHelper.Sync();
                     break;
 
@@ -114,7 +123,7 @@ namespace ContosoNotes.Views
             }
 
             // Clear the notes list so we can repopulate it.
-            NotesList = new ObservableCollection<NotesListItemModel>();
+            NotesList = new NotesListModel();
 
             var notesListItemsDict = new Dictionary<string, int>();
 
@@ -125,7 +134,7 @@ namespace ContosoNotes.Views
                 for (var i = 0; i < remoteNotes.Items.Count; i++)
                 {
                     var notesListItem = remoteNotes.Items[i];
-                    NotesList.Add(notesListItem);
+                    NotesList.Items.Add(notesListItem);
                     notesListItemsDict.Add(notesListItem.NotePageId, i);
                 }
             }
@@ -139,7 +148,7 @@ namespace ContosoNotes.Views
                 {
                     if (!notesListItemsDict.ContainsKey(notesListItem.NotePageId))
                     {
-                        NotesList.Add(notesListItem);
+                        NotesList.Items.Add(notesListItem);
 
                         // Sync these notes back to the remote, if available.
                         updateNotesList = true;
@@ -153,7 +162,7 @@ namespace ContosoNotes.Views
             }
 
             // If we have notes in the list, attempt to pull the active/current note page.
-            if (NotesList.Count > 0)
+            if (NotesList.Items.Count > 0)
             {
                 // Check the roaming settings for an active note page.
                 if (CurrentNotePage == null && _roamingStorageHelper != null)
@@ -161,7 +170,7 @@ namespace ContosoNotes.Views
                     string currentNotePageId = _roamingStorageHelper.Cache["currentNotePageId"].ToString();
                     if (currentNotePageId != null)
                     {
-                        foreach (var notesListItem in NotesList)
+                        foreach (var notesListItem in NotesList.Items)
                         {
                             if (currentNotePageId == notesListItem.NotePageId)
                             {
@@ -179,7 +188,7 @@ namespace ContosoNotes.Views
                     string currentNotePageId = _localStorageHelper.Read<string>("currentNotePageId");
                     if (currentNotePageId != null)
                     {
-                        foreach (var notesListItem in NotesList)
+                        foreach (var notesListItem in NotesList.Items)
                         {
                             if (currentNotePageId == notesListItem.NotePageId)
                             {
@@ -192,9 +201,9 @@ namespace ContosoNotes.Views
                 }
 
                 // Try to grab the first note page.
-                if (CurrentNotePage == null && _notesList.Count > 0)
+                if (CurrentNotePage == null && _notesList.Items.Count > 0)
                 {
-                    string notePageFileName = GetNotePageFileName(_notesList[0]);
+                    string notePageFileName = GetNotePageFileName(_notesList.Items[0]);
                     CurrentNotePage = await _localStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
                 }
             }
@@ -216,7 +225,7 @@ namespace ContosoNotes.Views
                     }
                 };
 
-                NotesList.Add(new NotesListItemModel()
+                NotesList.Items.Add(new NotesListItemModel()
                 {
                     NotePageId = CurrentNotePage.Id,
                     NotePageTitle = CurrentNotePage.PageTitle,
@@ -254,10 +263,10 @@ namespace ContosoNotes.Views
 
         private async Task SaveNotesListAsync()
         {
-            if (_notesList != null && _notesList.Count > 0)
+            if (_notesList != null && _notesList.Items.Count > 0)
             {
                 // Update the title for the current note page for display in the notes list.
-                foreach (var notesListItem in NotesList)
+                foreach (var notesListItem in NotesList.Items)
                 {
                     if (notesListItem.NotePageId == _currentNotePage.Id)
                     {
@@ -267,7 +276,7 @@ namespace ContosoNotes.Views
                 }
 
                 const string notesListFileName = "notesList.json";
-                NotesListModel notesListModel = new NotesListModel(_notesList);
+                NotesListModel notesListModel = new NotesListModel(_notesList.Items);
 
                 await _localStorageHelper.SaveFileAsync(notesListFileName, notesListModel);
 

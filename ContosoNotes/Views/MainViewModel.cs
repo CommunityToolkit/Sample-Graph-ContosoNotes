@@ -160,7 +160,7 @@ namespace ContosoNotes.Views
                 // Check the roaming settings for an active note page.
                 if (CurrentNotePage == null && _roamingStorageHelper != null)
                 {
-                    string currentNotePageId = _roamingStorageHelper.Cache["currentNotePageId"].ToString();
+                    string currentNotePageId = _roamingStorageHelper.Read<string>("currentNotePageId");
                     if (currentNotePageId != null)
                     {
                         foreach (var notesListItem in NotesList.Items)

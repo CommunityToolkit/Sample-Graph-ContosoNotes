@@ -18,6 +18,7 @@
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -195,13 +196,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Net.Authentication">
-      <Version>7.0.0-build.85.gb97f6d5569</Version>
+      <Version>7.0.0-build.86</Version>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Uwp.Authentication">
-      <Version>7.0.0-build.85.gb97f6d5569</Version>
+      <Version>7.0.0-build.86</Version>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Uwp.Graph.Controls">
-      <Version>7.0.0-build.85.gb97f6d5569</Version>
+      <Version>7.0.0-build.86</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>

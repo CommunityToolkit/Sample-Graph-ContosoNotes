@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.System;
+using Windows.UI.Xaml.Input;
 
 namespace ContosoNotes.Views
 {
@@ -306,37 +307,50 @@ namespace ContosoNotes.Views
 
         private void OnKeywordDetected(object sender, KeywordDetectedEventArgs e)
         {
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.Normal, () =>
+            var noteItem = sender as NoteItemModel;
+
+            // Handle any registered keywords.
+            if (e.Keyword == "todo:")
             {
-                var noteItem = sender as NoteItemModel;
+                var noteItemIndex = CurrentNotePage.NoteItems.IndexOf(noteItem);
 
-                // Handle any registered keywords.
-                if (e.Keyword == "todo:")
+                if (string.IsNullOrEmpty(e.PreText))
                 {
-                    var noteItemIndex = CurrentNotePage.NoteItems.IndexOf(noteItem);
+                    // Remove the now empty note item.
+                    CurrentNotePage.NoteItems.RemoveAt(noteItemIndex--);
+                }
+                else
+                {
+                    // Update the existing NoteItem with the text prior to the detected keyword.
+                    CurrentNotePage.NoteItems[noteItemIndex].Text = e.PreText;
+                }
 
-                    if (string.IsNullOrEmpty(e.PreText))
+                var taskItem = new TaskNoteItemModel();
+                CurrentNotePage.NoteItems.Insert(++noteItemIndex, taskItem);
+
+                // Insert a new item with the text from after the detected keyword, if any.
+                if (!string.IsNullOrEmpty(e.PostText))
+                {
+                    // Check if we have a text note next to pre-pend with our split
+                    if (++noteItemIndex < CurrentNotePage.NoteItems.Count && CurrentNotePage.NoteItems[noteItemIndex] is not TaskNoteItemModel)
                     {
-                        // Remove the now empty note item.
-                        CurrentNotePage.NoteItems.RemoveAt(noteItemIndex);
+                        var note = CurrentNotePage.NoteItems[noteItemIndex];
+                        note.Text = e.PostText + note.Text;
                     }
                     else
                     {
-                        // Update the existing NoteItem with the text prior to the detected keyword.
-                        CurrentNotePage.NoteItems[noteItemIndex].Text = e.PreText;
-                    }
-
-                    var taskItem = new TaskNoteItemModel();
-                    CurrentNotePage.NoteItems.Insert(++noteItemIndex, taskItem);
-
-                    // Insert a new item with the text from after the detected keyword, if any.
-                    if (!string.IsNullOrEmpty(e.PostText))
-                    {
+                        // Otherwise we insert a new text note
                         NoteItemModel postItem = new NoteItemModel(e.PostText);
-                        CurrentNotePage.NoteItems.Insert(++noteItemIndex, postItem);
+                        CurrentNotePage.NoteItems.Insert(noteItemIndex, postItem);
                     }
                 }
-            });
+                else if (++noteItemIndex == CurrentNotePage.NoteItems.Count)
+                {
+                    // If we're at the end we also want a blank note to help for navigating
+                    NoteItemModel postItem = new NoteItemModel(" ");
+                    CurrentNotePage.NoteItems.Insert(noteItemIndex, postItem);
+                }
+            }
         }
 
         private void OnKeyDetected(object sender, KeyDetectedEventArgs e)

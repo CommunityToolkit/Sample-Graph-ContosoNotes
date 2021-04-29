@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 namespace ContosoNotes.UI
 {
@@ -37,6 +38,33 @@ namespace ContosoNotes.UI
         {
             SetValue(property, value);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void TextBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                FocusManager.TryMoveFocus(FocusNavigationDirection.Down);
+
+                e.Handled = true;
+            }
+            else if (e.Key == Windows.System.VirtualKey.Left &&
+                ItemText.SelectionStart == 0)
+            {
+                ItemCheck.Focus(FocusState.Keyboard);
+
+                e.Handled = true;
+            }
+        }
+
+        private void CheckBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Right)
+            {
+                ItemText.Focus(FocusState.Keyboard);
+
+                e.Handled = true;
+            }
         }
     }
 }

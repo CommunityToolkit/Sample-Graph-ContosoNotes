@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 
 namespace ContosoNotes.Models
 {
@@ -23,6 +24,7 @@ namespace ContosoNotes.Models
             set => SetProperty(ref _noteItems, value);
         }
 
+        [JsonIgnore]
         public bool IsEmpty => _noteItems == null || _noteItems.Count == 0 || (_noteItems.Count == 1 && string.IsNullOrWhiteSpace(_noteItems[0].Text));
 
         public NotePageModel()

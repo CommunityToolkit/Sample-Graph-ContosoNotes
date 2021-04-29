@@ -32,6 +32,16 @@ namespace ContosoNotes.UI
         {
             InitializeComponent();
             (Content as FrameworkElement).DataContext = this;
+
+            GettingFocus += TaskNoteItemView_GettingFocus;
+        }
+
+        private void TaskNoteItemView_GettingFocus(UIElement sender, GettingFocusEventArgs args)
+        {
+            if (args.OldFocusedElement != ItemText)
+            {
+                args.NewFocusedElement = ItemText;
+            }
         }
 
         private void SetValueDP(DependencyProperty property, object value, [CallerMemberName] string propertyName = null)
@@ -54,6 +64,10 @@ namespace ContosoNotes.UI
                 ItemCheck.Focus(FocusState.Keyboard);
 
                 e.Handled = true;
+            }
+            else if (e.Key == Windows.System.VirtualKey.Back && string.IsNullOrEmpty(ItemText.Text))
+            {
+
             }
         }
 

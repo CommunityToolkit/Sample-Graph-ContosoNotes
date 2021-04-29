@@ -121,8 +121,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\JsonObjectSerializer.cs" />
+    <Compile Include="Common\LoadingState.cs" />
     <Compile Include="Models\NotesListItemModel.cs" />
     <Compile Include="Models\NotesListModel.cs" />
+    <Compile Include="StorageManager.cs" />
     <Compile Include="UI\NoteItemDataTemplateSelector.cs" />
     <Compile Include="UI\NoteItemView.xaml.cs">
       <DependentUpon>NoteItemView.xaml</DependentUpon>
@@ -206,6 +208,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Graph">
+      <Version>4.0.0-preview.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.11</Version>

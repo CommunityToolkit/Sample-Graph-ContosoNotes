@@ -57,19 +57,10 @@ namespace ContosoNotes
         /// <summary>
         /// Initialize the global authentication provider.
         /// </summary>
-        private async void InitializeGlobalProvider()
+        private void InitializeGlobalProvider()
         {
-            if (ProviderManager.Instance.GlobalProvider != null)
-            {
-                return;
-            }
-
-            // Run on the UI thread
-            await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite", "Files.ReadWrite" };
-                ProviderManager.Instance.GlobalProvider = new WindowsProvider(scopes);
-            });
+            string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite", "Files.ReadWrite" };
+            ProviderManager.Instance.GlobalProvider = new WindowsProvider(scopes);
         }
 
         /// <summary>

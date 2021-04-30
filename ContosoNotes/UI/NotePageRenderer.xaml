@@ -2,8 +2,8 @@
     x:Class="ContosoNotes.UI.NotePageRenderer"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ContosoNotes.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:ContosoNotes.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:ContosoNotes.Models"
     d:DataContext="{d:DesignInstance Type=local:NotePageRenderer}"
@@ -11,36 +11,37 @@
 
     <UserControl.Resources>
 
-        <DataTemplate x:DataType="models:NoteItemModel" x:Key="TextNoteItemDataTemplate">
+        <DataTemplate x:Key="TextNoteItemDataTemplate" x:DataType="models:NoteItemModel">
             <local:NoteItemView NoteItem="{Binding}" />
         </DataTemplate>
 
-        <DataTemplate x:DataType="models:TaskNoteItemModel" x:Key="TaskNoteItemDataTemplate">
-            <local:TaskNoteItemView TaskNoteItem="{Binding}" />
+        <DataTemplate x:Key="TaskNoteItemDataTemplate" x:DataType="models:TaskNoteItemModel">
+            <local:TaskNoteItemView
+                TaskNoteItem="{Binding}" />
         </DataTemplate>
 
-        <local:NoteItemDataTemplateSelector 
+        <local:NoteItemDataTemplateSelector
             x:Key="NoteItemDataTemplateSelector"
-            TextItemTemplate="{StaticResource TextNoteItemDataTemplate}"
-            TaskItemTemplate="{StaticResource TaskNoteItemDataTemplate}" />
+            TaskItemTemplate="{StaticResource TaskNoteItemDataTemplate}"
+            TextItemTemplate="{StaticResource TextNoteItemDataTemplate}" />
 
     </UserControl.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBox 
+        <TextBox
+            VerticalAlignment="Center"
             BorderThickness="0"
-            Text="{Binding NotePage.PageTitle, Mode=TwoWay}"
             FontWeight="SemiBold"
             PlaceholderText="Title"
-            VerticalAlignment="Center" />
-        <ListView 
+            Text="{x:Bind NotePage.PageTitle, Mode=TwoWay}" />
+        <ListView
             Grid.Row="1"
-            ItemsSource="{Binding NotePage.NoteItems, Mode=OneWay}" 
             ItemTemplateSelector="{StaticResource NoteItemDataTemplateSelector}"
+            ItemsSource="{x:Bind NotePage.NoteItems, Mode=OneWay}"
             SelectionMode="None">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">

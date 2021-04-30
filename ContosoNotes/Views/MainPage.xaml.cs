@@ -5,13 +5,11 @@ namespace ContosoNotes.Views
 {
     public sealed partial class MainPage : Page
     {
-        private static readonly MainViewModel ViewModel = new MainViewModel();
+        private MainViewModel ViewModel { get; } = new MainViewModel();
 
         public MainPage()
         {
             InitializeComponent();
-
-            DataContext = ViewModel;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

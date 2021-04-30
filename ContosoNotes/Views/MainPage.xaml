@@ -138,6 +138,7 @@
 
             <!--  Note page renderer  -->
             <ui:NotePageRenderer
+                DeleteTaskCommand="{x:Bind ViewModel.DeleteTaskCommand}"
                 NotePage="{x:Bind ViewModel.CurrentNotePage, Mode=OneWay}" />
 
             <!--  Note page footer panel  -->

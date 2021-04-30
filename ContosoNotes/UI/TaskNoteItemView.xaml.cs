@@ -1,6 +1,7 @@
 ﻿using ContosoNotes.Models;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -19,6 +20,15 @@ namespace ContosoNotes.UI
                 var noteItem = e.NewValue as TaskNoteItemModel;
             }
         }
+
+        public ICommand DeleteTaskCommand
+        {
+            get { return (ICommand)GetValue(DeleteTaskCommandProperty); }
+            set { SetValue(DeleteTaskCommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty DeleteTaskCommandProperty =
+            DependencyProperty.Register(nameof(DeleteTaskCommand), typeof(ICommand), typeof(TaskNoteItemView), new PropertyMetadata(null));
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -67,7 +77,7 @@ namespace ContosoNotes.UI
             }
             else if (e.Key == Windows.System.VirtualKey.Back && string.IsNullOrEmpty(ItemText.Text))
             {
-
+                DeleteTaskCommand.Execute(TaskNoteItem);
             }
         }
 

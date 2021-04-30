@@ -20,6 +20,16 @@ namespace ContosoNotes.UI
             set => SetValue(NotePageProperty, value);
         }
 
+        public ICommand DeleteTaskCommand
+        {
+            get { return (ICommand)GetValue(DeleteTaskCommandProperty); }
+            set { SetValue(DeleteTaskCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DeleteTaskCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DeleteTaskCommandProperty =
+            DependencyProperty.Register(nameof(DeleteTaskCommand), typeof(ICommand), typeof(NotePageRenderer), new PropertyMetadata(null));
+
         public NotePageRenderer()
         {
             InitializeComponent();

@@ -6,6 +6,7 @@
     xmlns:local="using:ContosoNotes.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:ContosoNotes.Models"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
     d:DataContext="{d:DesignInstance Type=local:NotePageRenderer}"
     mc:Ignorable="d">
 
@@ -17,6 +18,8 @@
 
         <DataTemplate x:Key="TaskNoteItemDataTemplate" x:DataType="models:TaskNoteItemModel">
             <local:TaskNoteItemView
+                ui:FrameworkElementExtensions.AncestorType="local:NotePageRenderer"
+                DeleteTaskCommand="{Binding (ui:FrameworkElementExtensions.Ancestor).DeleteTaskCommand, RelativeSource={RelativeSource Self}}"
                 TaskNoteItem="{Binding}" />
         </DataTemplate>
 

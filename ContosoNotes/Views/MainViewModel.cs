@@ -18,6 +18,8 @@ namespace ContosoNotes.Views
         public RelayCommand TogglePaneCommand { get; }
         public RelayCommand SaveCommand { get; }
 
+        public RelayCommand<TaskNoteItemModel> DeleteTaskCommand { get; }
+
         private bool _isPaneOpen;
         public bool IsPaneOpen
         {
@@ -50,8 +52,9 @@ namespace ContosoNotes.Views
 
         public MainViewModel()
         {
-            TogglePaneCommand = new RelayCommand(TogglePane);
-            SaveCommand = new RelayCommand(Save);
+            TogglePaneCommand = new(TogglePane);
+            SaveCommand = new(Save);
+            DeleteTaskCommand = new(DeleteTask);
 
             _isSignedIn = ProviderManager.Instance.GlobalProvider?.State == ProviderState.SignedIn;
             _isPaneOpen = true;
@@ -212,9 +215,23 @@ namespace ContosoNotes.Views
             }
         }
 
-        private void OnKeyDetected(object sender, KeyDetectedEventArgs e)
+        private void DeleteTask(TaskNoteItemModel task)
         {
-            
+            var taskIndex = CurrentNotePage.NoteItems.IndexOf(task);
+
+            // TODO: Do we need to delete the task in the Graph here as well?
+
+            CurrentNotePage.NoteItems.RemoveAt(taskIndex);
+
+            // Check if we see a text note before us and after to merge
+            if (taskIndex > 0 && CurrentNotePage.NoteItems[taskIndex - 1] is not TaskNoteItemModel &&
+                taskIndex < CurrentNotePage.NoteItems.Count && CurrentNotePage.NoteItems[taskIndex] is not TaskNoteItemModel)
+            {
+                // Merge two texts together
+                CurrentNotePage.NoteItems[taskIndex - 1].Text += CurrentNotePage.NoteItems[taskIndex].Text;
+
+                CurrentNotePage.NoteItems.RemoveAt(taskIndex);
+            }
         }
     }
 }

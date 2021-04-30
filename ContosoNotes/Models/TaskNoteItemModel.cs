@@ -2,7 +2,7 @@
 using CommunityToolkit.Net.Graph.Extensions;
 using ContosoNotes.Common;
 using Microsoft.Graph;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace ContosoNotes.Models

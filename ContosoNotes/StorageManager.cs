@@ -28,13 +28,12 @@ namespace ContosoNotes
             if (notesList != null && notesList.Items.Count > 0)
             {
                 const string notesListFileName = "notesList.json";
-                NotesListModel notesListModel = new NotesListModel(notesList.Items);
 
-                await _localStorageHelper.SaveFileAsync(notesListFileName, notesListModel);
+                await _localStorageHelper.SaveFileAsync(notesListFileName, notesList);
 
                 if (_roamingStorageHelper != null)
                 {
-                    await _roamingStorageHelper.SaveFileAsync(notesListFileName, notesListModel);
+                    await _roamingStorageHelper.SaveFileAsync(notesListFileName, notesList);
                 }
             }
         }

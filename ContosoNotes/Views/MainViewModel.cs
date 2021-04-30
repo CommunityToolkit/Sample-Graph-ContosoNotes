@@ -104,20 +104,6 @@ namespace ContosoNotes.Views
 
             // Clear the notes list so we can repopulate it.
             NotesList = new NotesListModel();
-
-            if (_currentNotePage != null && _notesList?.Items != null)
-            {
-                // Update the title for the current note page for display in the notes list.
-                foreach (var notesListItem in _notesList.Items)
-                {
-                    if (notesListItem.NotePageId == _currentNotePage.Id)
-                    {
-                        notesListItem.NotePageTitle = _currentNotePage.PageTitle;
-                        break;
-                    }
-                }
-            }
-
             NotesList = await _storageManager.GetNotesListAsync();
 
             // If we have notes in the list, attempt to pull the active/current note page.
@@ -162,6 +148,15 @@ namespace ContosoNotes.Views
 
         private async void Save()
         {
+            foreach (var item in _notesList.Items)
+            {
+                if (item.NotePageId == _currentNotePage.Id)
+                {
+                    item.NotePageTitle = _currentNotePage.PageTitle;
+                    break;
+                }
+            }
+
             // Save any existing NotePage
             await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
 

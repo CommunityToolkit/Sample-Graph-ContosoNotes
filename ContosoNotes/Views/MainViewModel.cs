@@ -7,6 +7,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Uwp.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Xaml.Input;
@@ -15,6 +16,8 @@ namespace ContosoNotes.Views
 {
     public class MainViewModel : ObservableObject
     {
+        private static SemaphoreSlim _mutex = new SemaphoreSlim(1);
+
         public RelayCommand TogglePaneCommand { get; }
         public RelayCommand SaveCommand { get; }
 
@@ -80,72 +83,79 @@ namespace ContosoNotes.Views
         {
             IsSignedIn = ProviderManager.Instance.GlobalProvider?.State == ProviderState.SignedIn;
 
-            Load();
+            if (ProviderManager.Instance.GlobalProvider?.State != ProviderState.Loading)
+            {
+                Load();
+            }
         }
 
         public async void Load()
         {
-            if (ProviderManager.Instance.GlobalProvider?.State == ProviderState.Loading)
-            {
-                return;
-            }
+            await _mutex.WaitAsync();
 
-            // Handle any existing NotePage
-            if (CurrentNotePage != null)
+            try
             {
-                if (CurrentNotePage.IsEmpty)
+                // Handle any existing NotePage
+                if (CurrentNotePage != null)
                 {
-                    CurrentNotePage = null;
+                    if (CurrentNotePage.IsEmpty)
+                    {
+                        CurrentNotePage = null;
+                    }
+                    else
+                    {
+                        // We have transitioned between local and roaming data, but there is already an active NotePage with content.
+                        // Save the progress (overriding any existing) and continue to use it as the current NotePage.
+                        await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
+                    }
                 }
-                else 
+
+                // Clear the notes list so we can repopulate it.
+                NotesList = new NotesListModel();
+                NotesList = await _storageManager.GetNotesListAsync();
+
+                // If we have notes in the list, attempt to pull the active/current note page.
+                if (_notesList.Items.Count > 0)
                 {
-                    // We have transitioned between local and roaming data, but there is already an active NotePage with content.
-                    // Save the progress (overriding any existing) and continue to use it as the current NotePage.
+                    if (_currentNotePage == null)
+                    {
+                        CurrentNotePage = await _storageManager.GetCurrentNotePageAsync(_notesList);
+                    }
+
+                    if (_currentNotePage == null)
+                    {
+                        // We didn't find a "current" page, so just grab the first one in the list.
+                        CurrentNotePage = await _storageManager.GetNotePageAsync(_notesList.Items[0]);
+                    }
+                }
+
+                if (_currentNotePage != null)
+                {
+                    // Just making sure we are all synced up.
                     await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
                 }
-            }
-
-            // Clear the notes list so we can repopulate it.
-            NotesList = new NotesListModel();
-            NotesList = await _storageManager.GetNotesListAsync();
-
-            // If we have notes in the list, attempt to pull the active/current note page.
-            if (_notesList.Items.Count > 0)
-            {
-                if (_currentNotePage == null)
+                else
                 {
-                    CurrentNotePage = await _storageManager.GetCurrentNotePageAsync(_notesList);
-                }
-
-                if (_currentNotePage == null)
-                {
-                    // We didn't find a "current" page, so just grab the first one in the list.
-                    CurrentNotePage = await _storageManager.GetNotePageAsync(_notesList.Items[0]);
-                }
-            }   
-
-            if (_currentNotePage != null)
-            {
-                // Just making sure we are all synced up.
-                await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
-            }
-            else
-            {
-                // Create a new empty NotePageModel, with a fresh item ready for input
-                CurrentNotePage = new NotePageModel()
-                {
-                    PageTitle = "New note",
-                    NoteItems = new ObservableCollection<NoteItemModel>()
+                    // Create a new empty NotePageModel, with a fresh item ready for input
+                    CurrentNotePage = new NotePageModel()
+                    {
+                        PageTitle = "New note",
+                        NoteItems = new ObservableCollection<NoteItemModel>()
                     {
                         new NoteItemModel()
                     }
-                };
+                    };
 
-                NotesList.Items.Add(new NotesListItemModel()
-                {
-                    NotePageId = CurrentNotePage.Id,
-                    NotePageTitle = CurrentNotePage.PageTitle,
-                });
+                    NotesList.Items.Add(new NotesListItemModel()
+                    {
+                        NotePageId = CurrentNotePage.Id,
+                        NotePageTitle = CurrentNotePage.PageTitle,
+                    });
+                }
+            }
+            finally
+            {
+                _mutex.Release();
             }
         }
 

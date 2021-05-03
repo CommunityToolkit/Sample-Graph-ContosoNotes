@@ -109,7 +109,7 @@
             </Grid.RowDefinitions>
 
             <!--  List of notes  -->
-            <ListView ItemsSource="{x:Bind ViewModel.NotesList.Items, Mode=OneTime}">
+            <ListView ItemsSource="{x:Bind ViewModel.NotesList.Items, Mode=OneWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:NotesListItemModel">
                         <Grid>

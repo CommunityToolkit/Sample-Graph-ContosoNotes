@@ -1,16 +1,10 @@
 ﻿using CommunityToolkit.Net.Authentication;
-using CommunityToolkit.Uwp.Graph.Helpers.RoamingSettings;
-using ContosoNotes.Common;
 using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Uwp.Helpers;
-using System.Collections.Generic;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading;
-using System.Threading.Tasks;
-using Windows.System;
-using Windows.UI.Xaml.Input;
 
 namespace ContosoNotes.Views
 {

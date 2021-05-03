@@ -48,9 +48,17 @@ namespace ContosoNotes.UI
 
         private void TaskNoteItemView_GettingFocus(UIElement sender, GettingFocusEventArgs args)
         {
-            if (args.OldFocusedElement != ItemText)
+            try
             {
-                args.NewFocusedElement = ItemText;
+                if (args.OldFocusedElement != ItemText)
+                {
+                    args.NewFocusedElement = ItemText;
+                }
+            }
+            catch
+            {
+                // There is some problem here causing an Arguement exception to be thrown when settings the newly focused element.
+                // Need to investigate.
             }
         }
 

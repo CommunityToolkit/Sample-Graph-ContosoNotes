@@ -2,18 +2,29 @@
 using CommunityToolkit.Net.Graph.Extensions;
 using ContosoNotes.Common;
 using Microsoft.Graph;
+using Microsoft.Toolkit.Uwp.UI;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using Windows.System;
 
 namespace ContosoNotes.Models
 {
     public class TaskNoteItemModel : NoteItemModel
     {
-        public bool IsCompleted { get; protected set; }
+        private static SemaphoreSlim _mutex = new SemaphoreSlim(1);
 
         public string TodoTaskId { get; set; }
 
         public string TodoTaskListId { get; set; }
+
+        private bool _isCompleted;
+        public bool IsCompleted
+        {
+            get => _isCompleted;
+            set => SetProperty(ref _isCompleted, value);
+        }
 
         [JsonIgnore]
         public TodoTask TodoTask { get; protected set; }
@@ -21,95 +32,165 @@ namespace ContosoNotes.Models
         [JsonIgnore]
         public LoadingState LoadingState { get; protected set; }
 
-        public TaskNoteItemModel(string text = "") : base(text)
+        private DispatcherQueueTimer _timer;
+
+        public TaskNoteItemModel()
         {
             LoadingState = LoadingState.Unloaded;
+            _timer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+
+            Load();
+        }
+
+        public TaskNoteItemModel(string text = null) : base(text)
+        {
+            LoadingState = LoadingState.Unloaded;
+            _timer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+        
+            Load();
+        }
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IsCompleted):
+                case nameof(Text):
+                    _timer.Debounce(() => Save(), TimeSpan.FromSeconds(3));
+                    break;
+            }
+
+            base.OnPropertyChanged(e);
         }
 
         protected async void Load(bool force = false)
         {
-            if (LoadingState == LoadingState.Loading)
-            {
-                return;
-            }
-            if (LoadingState == LoadingState.Loaded && !force)
-            {
-                return;
-            }
+            await _mutex.WaitAsync();
 
-            LoadingState = LoadingState.Loading;
-
-            if (TodoTaskId == null || TodoTaskListId == null)
+            try
             {
-                TodoTask = null;
-                IsCompleted = false;
+                if (LoadingState == LoadingState.Loading)
+                {
+                    return;
+                }
+                if (LoadingState == LoadingState.Loaded && !force)
+                {
+                    return;
+                }
+
+                LoadingState = LoadingState.Loading;
+
+                if (TodoTaskId == null || TodoTaskListId == null)
+                {
+                    TodoTask = null;
+                    IsCompleted = false;
+                }
+                else
+                {
+                    var provider = ProviderManager.Instance.GlobalProvider;
+                    if (provider != null && provider.State == ProviderState.SignedIn)
+                    {
+                        var graph = ProviderManager.Instance.GlobalProvider.Graph();
+
+                        try
+                        {
+                            // Retrieve the task.
+                            TodoTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().GetAsync();
+                            IsCompleted = TodoTask.Status == Microsoft.Graph.TaskStatus.Completed;
+                        }
+                        catch
+                        {
+                            // Task must not exist.
+                            TodoTask = null;
+                            IsCompleted = false;
+                        }
+                    }
+                }
+
+                LoadingState = LoadingState.Loaded;
             }
-            else
+            catch
+            {
+                LoadingState = LoadingState.Unloaded;
+            }
+            finally
+            {
+                _mutex.Release();
+            }
+        }
+
+        protected async void Save()
+        {
+            await _mutex.WaitAsync();
+
+            try
             {
                 var provider = ProviderManager.Instance.GlobalProvider;
                 if (provider != null && provider.State == ProviderState.SignedIn)
                 {
                     var graph = ProviderManager.Instance.GlobalProvider.Graph();
 
-                    try
+                    if (TodoTaskListId == null)
                     {
-                        // Retrieve the task.
-                        TodoTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().GetAsync();
-                        IsCompleted = TodoTask.Status == Microsoft.Graph.TaskStatus.Completed;
+                        try
+                        {
+                            var existingLists = await graph.Me.Todo.Lists.Request().Filter("displayName eq 'ContosoNotes'").GetAsync();
+                            if (existingLists.Count == 0)
+                            {
+                                TodoTaskList newTaskList = await graph.Me.Todo.Lists.Request().AddAsync(new TodoTaskList()
+                                {
+                                    ODataType = null, // Magic, don't remove
+                                    DisplayName = "ContosoNotes"
+                                });
+                                
+                                TodoTaskListId = newTaskList.Id;
+                            }
+                            else
+                            {
+                                TodoTaskListId = existingLists[0].Id;
+                            }
+                        }
+                        catch
+                        {
+                            // Unable to retrieve or create the TodoTaskList. Bail.
+                            return;
+                        }
                     }
-                    catch
+
+                    if (TodoTaskId == null)
                     {
-                        // Task must not exist.
-                        TodoTask = null;
-                        IsCompleted = false;
+                        // Create a new task.
+                        TodoTask newTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks.Request().AddAsync(new TodoTask()
+                        {
+                            ODataType = null, // Magic, don't remove
+                            Title = Text,
+                        });
+
+                        TodoTask = newTask;
+                        TodoTaskId = newTask.Id;
                     }
+                    else
+                    {
+                        // Update the existing task.
+                        var taskForUpdate = new TodoTask()
+                        {
+                            Id = TodoTaskId,
+                            Body = new ItemBody()
+                            {
+                                Content = Text,
+                            },
+                            Status = IsCompleted ? TaskStatus.Completed : TaskStatus.NotStarted
+                        };
+
+                        TodoTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().UpdateAsync(taskForUpdate);
+                    }
+
+                    IsCompleted = TodoTask.Status == TaskStatus.Completed;
                 }
             }
-
-            LoadingState = LoadingState.Loaded;
-        }
-
-        public async Task Save()
-        {
-            var provider = ProviderManager.Instance.GlobalProvider;
-            if (provider != null && provider.State == ProviderState.SignedIn)
+            finally
             {
-                var graph = ProviderManager.Instance.GlobalProvider.Graph();
-                
-                if (TodoTaskId == null)
-                {
-                    // Create a new task.
-                    TodoTask newTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks.Request().AddAsync(new TodoTask()
-                    {
-                        Body = new ItemBody()
-                        {
-                            Content = Text
-                        },
-                    });
-
-                    TodoTaskId = newTask.Id;
-                }
-                else
-                {
-                    // Update the existing task.
-                    var taskForUpdate = new TodoTask()
-                    {
-                        Id = TodoTaskId,
-                        Body = new ItemBody()
-                        {
-                            Content = Text,
-                        },
-                    };
-
-                    if (IsCompleted)
-                    {
-                        taskForUpdate.Status = Microsoft.Graph.TaskStatus.Completed;
-                    }
-
-                    TodoTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().UpdateAsync(taskForUpdate);
-
-                    IsCompleted = TodoTask.Status == Microsoft.Graph.TaskStatus.Completed;
-                }
+                _mutex.Release();
             }
         }
     }

@@ -127,8 +127,8 @@
     <Compile Include="StorageManager.cs" />
     <Compile Include="UI\LastSyncDateTimeConverter.cs" />
     <Compile Include="UI\NoteItemDataTemplateSelector.cs" />
-    <Compile Include="UI\NoteItemView.xaml.cs">
-      <DependentUpon>NoteItemView.xaml</DependentUpon>
+    <Compile Include="UI\TextNoteItemView.xaml.cs">
+      <DependentUpon>TextNoteItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\NotePageRenderer.xaml.cs">
       <DependentUpon>NotePageRenderer.xaml</DependentUpon>
@@ -225,7 +225,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="UI\NoteItemView.xaml">
+    <Page Include="UI\TextNoteItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

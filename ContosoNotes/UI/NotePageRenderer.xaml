@@ -13,7 +13,7 @@
     <UserControl.Resources>
 
         <DataTemplate x:Key="TextNoteItemDataTemplate" x:DataType="models:NoteItemModel">
-            <local:NoteItemView NoteItem="{Binding}" />
+            <local:TextNoteItemView NoteItem="{Binding}" />
         </DataTemplate>
 
         <DataTemplate x:Key="TaskNoteItemDataTemplate" x:DataType="models:TaskNoteItemModel">
@@ -41,6 +41,7 @@
             Text="{x:Bind NotePage.PageTitle, Mode=TwoWay}" />
         <ListView
             Grid.Row="1"
+            Name="NoteItemsListView"
             ItemTemplateSelector="{StaticResource NoteItemDataTemplateSelector}"
             ItemsSource="{x:Bind NotePage.NoteItems, Mode=OneWay}"
             SelectionMode="None">

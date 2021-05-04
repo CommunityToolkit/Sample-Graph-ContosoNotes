@@ -174,9 +174,9 @@ namespace ContosoNotes.Views
                     {
                         PageTitle = "New note",
                         NoteItems = new ObservableCollection<NoteItemModel>()
-                    {
-                        new NoteItemModel()
-                    }
+                        {
+                            new NoteItemModel()
+                        }
                     };
 
                     NotesList.Items.Add(new NotesListItemModel()

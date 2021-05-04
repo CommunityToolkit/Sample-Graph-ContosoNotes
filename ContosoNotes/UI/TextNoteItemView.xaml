@@ -1,11 +1,11 @@
 ﻿<UserControl
-    x:Class="ContosoNotes.UI.NoteItemView"
+    x:Class="ContosoNotes.UI.TextNoteItemView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:ContosoNotes.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DataContext="{d:DesignInstance Type=local:NoteItemView}"
+    d:DataContext="{d:DesignInstance Type=local:TextNoteItemView}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -19,6 +19,7 @@
     </UserControl.Resources>
 
     <TextBox
+        Name="NoteItemTextBox"
         Text="{x:Bind NoteItem.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         TextChanged="TextBox_TextChanged" />
 </UserControl>

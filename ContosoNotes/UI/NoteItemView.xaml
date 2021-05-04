@@ -19,9 +19,6 @@
     </UserControl.Resources>
 
     <TextBox
-        Name="NoteItemTextBox"
-        KeyUp="NoteItemTextBox_KeyUp"
-        PlaceholderText="Notes go here..."
         Text="{x:Bind NoteItem.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         TextChanged="TextBox_TextChanged" />
 </UserControl>

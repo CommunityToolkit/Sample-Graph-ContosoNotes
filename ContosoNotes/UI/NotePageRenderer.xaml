@@ -17,10 +17,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="TaskNoteItemDataTemplate" x:DataType="models:TaskNoteItemModel">
-            <local:TaskNoteItemView
-                ui:FrameworkElementExtensions.AncestorType="local:NotePageRenderer"
-                DeleteTaskCommand="{Binding (ui:FrameworkElementExtensions.Ancestor).DeleteTaskCommand, RelativeSource={RelativeSource Self}}"
-                TaskNoteItem="{Binding}" />
+            <local:TaskNoteItemView TaskNoteItem="{Binding}" />
         </DataTemplate>
 
         <local:NoteItemDataTemplateSelector

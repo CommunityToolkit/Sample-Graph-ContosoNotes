@@ -96,7 +96,7 @@ namespace ContosoNotes.Models
                         {
                             // Retrieve the task.
                             TodoTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().GetAsync();
-                            IsCompleted = TodoTask.Status == Microsoft.Graph.TaskStatus.Completed;
+                            IsCompleted = TodoTask.Status == TaskStatus.Completed;
                         }
                         catch
                         {
@@ -119,7 +119,7 @@ namespace ContosoNotes.Models
             }
         }
 
-        protected async void Save()
+        public async void Save()
         {
             await _mutex.WaitAsync();
 
@@ -188,6 +188,9 @@ namespace ContosoNotes.Models
                     IsCompleted = TodoTask.Status == TaskStatus.Completed;
                 }
             }
+            catch
+            {
+            }
             finally
             {
                 _mutex.Release();
@@ -200,6 +203,11 @@ namespace ContosoNotes.Models
 
             try
             {
+                if (TodoTaskListId == null || TodoTaskId == null)
+                {
+                    return;
+                }
+
                 var provider = ProviderManager.Instance.GlobalProvider;
                 if (provider != null && provider.State == ProviderState.SignedIn)
                 {
@@ -207,6 +215,9 @@ namespace ContosoNotes.Models
 
                     await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().DeleteAsync();
                 }
+            }
+            catch
+            {
             }
             finally
             {

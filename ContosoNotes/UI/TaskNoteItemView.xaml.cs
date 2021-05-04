@@ -1,7 +1,7 @@
 ﻿using ContosoNotes.Models;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -11,24 +11,7 @@ namespace ContosoNotes.UI
     public sealed partial class TaskNoteItemView : UserControl, INotifyPropertyChanged
     {
         public static readonly DependencyProperty TaskNoteItemProperty =
-            DependencyProperty.Register(nameof(TaskNoteItem), typeof(TaskNoteItemModel), typeof(TaskNoteItemView), new PropertyMetadata(null, OnTaskNoteItemChanged));
-
-        private static void OnTaskNoteItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is TaskNoteItemView taskNoteItemView)
-            {
-                var noteItem = e.NewValue as TaskNoteItemModel;
-            }
-        }
-
-        public ICommand DeleteTaskCommand
-        {
-            get { return (ICommand)GetValue(DeleteTaskCommandProperty); }
-            set { SetValue(DeleteTaskCommandProperty, value); }
-        }
-
-        public static readonly DependencyProperty DeleteTaskCommandProperty =
-            DependencyProperty.Register(nameof(DeleteTaskCommand), typeof(ICommand), typeof(TaskNoteItemView), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(TaskNoteItem), typeof(TaskNoteItemModel), typeof(TaskNoteItemView), new PropertyMetadata(null));
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -68,30 +51,19 @@ namespace ContosoNotes.UI
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void TextBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        private void TextBox_KeyUp(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                FocusManager.TryMoveFocus(FocusNavigationDirection.Down);
-
-                e.Handled = true;
-            }
-            else if (e.Key == Windows.System.VirtualKey.Left &&
-                ItemText.SelectionStart == 0)
+            if (e.Key == VirtualKey.Left && ItemText.SelectionStart == 0)
             {
                 ItemCheck.Focus(FocusState.Keyboard);
 
                 e.Handled = true;
             }
-            else if (e.Key == Windows.System.VirtualKey.Back && string.IsNullOrEmpty(ItemText.Text))
-            {
-                DeleteTaskCommand.Execute(TaskNoteItem);
-            }
         }
 
         private void CheckBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
-            if (e.Key == Windows.System.VirtualKey.Right)
+            if (e.Key == VirtualKey.Right)
             {
                 ItemText.Focus(FocusState.Keyboard);
 

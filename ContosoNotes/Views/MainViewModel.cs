@@ -307,8 +307,7 @@ namespace ContosoNotes.Views
                 CurrentNotePage.NoteItems.RemoveAt(taskIndex);
             }
 
-
-            // TODO: Do we need to delete the task in the Graph here as well?
+            // Delete the task in the Graph as well.
             task.Delete();
         }
     }

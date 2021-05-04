@@ -27,13 +27,5 @@ namespace ContosoNotes.UI
                 KeywordDetector.Instance.Analyse(NoteItem);
             }
         }
-
-        private void NoteItemTextBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
-        {
-            if (NoteItem != null && sender is TextBox noteItemTextBox)
-            {
-                KeywordDetector.Instance.Analyse(NoteItem, e.Key, noteItemTextBox.SelectionStart);
-            }
-        }
     }
 }

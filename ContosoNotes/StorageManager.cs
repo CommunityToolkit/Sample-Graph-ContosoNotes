@@ -10,8 +10,8 @@ namespace ContosoNotes
 {
     public class StorageManager
     {
-        private IObjectSerializer _serializer;
-        private LocalObjectStorageHelper _localStorageHelper;
+        private readonly IObjectSerializer _serializer;
+        private readonly LocalObjectStorageHelper _localStorageHelper;
         private RoamingSettingsHelper _roamingStorageHelper;
 
         public StorageManager()

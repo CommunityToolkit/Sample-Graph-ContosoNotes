@@ -8,7 +8,7 @@
     xmlns:local="using:ContosoNotes.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:ContosoNotes.Models"
-    xmlns:ui="using:ContosoNotes.UI"
+    xmlns:ui="using:ContosoNotes.UI" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -64,7 +64,7 @@
             </Button>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Style="{StaticResource CustomButtonStyle}">
+                <!--<Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Translate.png" />
                 </Button>
                 <Button Style="{StaticResource CustomButtonStyle}">
@@ -76,21 +76,23 @@
                 <Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Attach.png" />
                 </Button>
-                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource CustomButtonStyle}">
+                <Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/More.png" />
-                </Button>
+                </Button>-->
             </StackPanel>
 
             <StackPanel Grid.Column="3" Orientation="Horizontal">
-                <Button Style="{StaticResource CustomButtonStyle}">
+                <!--<Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Outlook.png" />
-                </Button>
-                <Button Style="{StaticResource CustomButtonStyle}">
+                </Button>-->
+                <Button 
+                    Command="{x:Bind ViewModel.LaunchMicrosoftTodoCommand}"
+                    Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Todo.png" />
                 </Button>
-                <Button Style="{StaticResource CustomButtonStyle}">
+                <!--<Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Excel.png" />
-                </Button>
+                </Button>-->
             </StackPanel>
 
             <graphcontrols:LoginButton Grid.Column="4" />
@@ -102,7 +104,8 @@
             Padding="12,0,0,12"
             BorderBrush="#717171"
             BorderThickness="0,0,1,0"
-            Visibility="{x:Bind ViewModel.IsPaneOpen, Mode=OneWay}">
+            Visibility="{x:Bind ViewModel.IsPaneOpen, Mode=OneWay}"
+            Width="300">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="48" />
@@ -113,7 +116,10 @@
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:NotesListItemModel">
                         <Grid>
-                            <TextBlock Text="{x:Bind NotePageTitle, Mode=OneWay}" />
+                            <TextBlock 
+                                Text="{x:Bind NotePageTitle, Mode=OneWay}" 
+                                TextTrimming="WordEllipsis" 
+                                TextWrapping="NoWrap" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -121,9 +127,9 @@
 
             <!--  Notes list footer panel  -->
             <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Button Style="{StaticResource CustomButtonStyle}">
+                <!--<Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/NewNote.png" />
-                </Button>
+                </Button>-->
             </StackPanel>
         </Grid>
 
@@ -150,7 +156,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource CustomButtonStyle}" Visibility="{x:Bind ViewModel.IsPaneOpen, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}">
+                    <!--<Button Style="{StaticResource CustomButtonStyle}" Visibility="{x:Bind ViewModel.IsPaneOpen, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}">
                         <Image Source="ms-appx:///Assets/NewNote.png" />
                     </Button>
                     <Button Style="{StaticResource CustomButtonStyle}">
@@ -158,19 +164,27 @@
                     </Button>
                     <Button Style="{StaticResource CustomButtonStyle}">
                         <Image Source="ms-appx:///Assets/Redo.png" />
-                    </Button>
+                    </Button>-->
                 </StackPanel>
 
                 <!--  Sync indicator  -->
                 <Grid Grid.Column="2">
-                    <TextBlock
-                        VerticalAlignment="Bottom"
-                        Text="Sign in to sync your notes"
-                        Visibility="{x:Bind ViewModel.IsSignedIn, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}" />
-                    <TextBlock
-                        VerticalAlignment="Bottom"
-                        Text="Synced, Date, Time"
-                        Visibility="{x:Bind ViewModel.IsSignedIn, Mode=OneWay}" />
+                    <controls:SwitchPresenter Value="{x:Bind ViewModel.IsSignedIn, Mode=OneWay}">
+                        <controls:Case IsDefault="True">
+                            <TextBlock
+                                VerticalAlignment="Bottom"
+                                Text="Sign in to sync your notes" />
+                        </controls:Case>
+                        <controls:Case>
+                            <controls:Case.Value>
+                                <x:Boolean>True</x:Boolean>
+                            </controls:Case.Value>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <Run Text="Synced, " />
+                                <Run Text="{x:Bind ViewModel.LastSync.Value.ToShortTimeString(), Mode=OneWay}" />
+                            </TextBlock>
+                        </controls:Case>
+                    </controls:SwitchPresenter>
                 </Grid>
             </Grid>
         </Grid>

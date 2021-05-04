@@ -15,11 +15,12 @@
             <Setter Property="IsSpellCheckEnabled" Value="True" />
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="14" />
         </Style>
 
         <Style TargetType="CheckBox">
             <Setter Property="MinWidth" Value="0" />
-            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Margin" Value="10,0,0,0" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
     </UserControl.Resources>

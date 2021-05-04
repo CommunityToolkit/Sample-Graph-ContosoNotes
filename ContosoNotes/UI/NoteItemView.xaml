@@ -14,6 +14,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="IsSpellCheckEnabled" Value="True" />
             <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="14" />
         </Style>
     </UserControl.Resources>
 

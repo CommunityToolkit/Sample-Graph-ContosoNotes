@@ -38,6 +38,7 @@
         <TextBox
             VerticalAlignment="Center"
             BorderThickness="0"
+            FontSize="16"
             FontWeight="SemiBold"
             PlaceholderText="Title"
             Text="{x:Bind NotePage.PageTitle, Mode=TwoWay}" />

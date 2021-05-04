@@ -1,6 +1,4 @@
 ﻿using ContosoNotes.Models;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -10,8 +8,6 @@ namespace ContosoNotes.UI
     {
         public static readonly DependencyProperty NoteItemProperty =
             DependencyProperty.Register(nameof(NoteItem), typeof(NoteItemModel), typeof(NoteItemView), new PropertyMetadata(null));
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public NoteItemModel NoteItem
         {

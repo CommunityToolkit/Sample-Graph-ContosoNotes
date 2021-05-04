@@ -46,7 +46,7 @@ namespace ContosoNotes.Models
         {
             LoadingState = LoadingState.Unloaded;
             _timer = DispatcherQueue.GetForCurrentThread().CreateTimer();
-        
+
             Load();
         }
 
@@ -142,7 +142,7 @@ namespace ContosoNotes.Models
                                     ODataType = null, // Magic, don't remove
                                     DisplayName = "ContosoNotes"
                                 });
-                                
+
                                 TodoTaskListId = newTaskList.Id;
                             }
                             else
@@ -186,6 +186,26 @@ namespace ContosoNotes.Models
                     }
 
                     IsCompleted = TodoTask.Status == TaskStatus.Completed;
+                }
+            }
+            finally
+            {
+                _mutex.Release();
+            }
+        }
+
+        public async void Delete()
+        {
+            await _mutex.WaitAsync();
+
+            try
+            {
+                var provider = ProviderManager.Instance.GlobalProvider;
+                if (provider != null && provider.State == ProviderState.SignedIn)
+                {
+                    var graph = ProviderManager.Instance.GlobalProvider.Graph();
+
+                    await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().DeleteAsync();
                 }
             }
             finally

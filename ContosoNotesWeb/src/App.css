@@ -1,0 +1,76 @@
+header {
+  height: 65px;
+  box-shadow: rgb(0 0 0 / 5%) 0px 4px 12px 0px;
+  display: flex;
+  justify-content: center;
+}
+
+.top-nav {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 1192px;
+  align-items: center;
+  margin: 0 64px;
+}
+
+.logo {
+  flex: 1 0 auto;
+}
+
+.logo img {
+  max-height: 40px;
+  width: auto;
+
+}
+
+.sync-status {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.4;
+  margin-right: 12px;
+}
+
+mgt-login {
+  flex: 0 0 auto;
+}
+
+mgt-login mgt-person {
+  --avatar-size: 32px;
+}
+
+.content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  font-weight: 400;
+}
+
+.notes {
+  display: flex;
+  margin-top: 64px;
+  justify-content: center;
+}
+
+.note-title {
+  margin-top: 1.25em;
+  margin-bottom: -0.28em;
+}
+
+.notes-container {
+  width:100%;
+  max-width: 680px;
+  margin: 0 64px;
+}
+
+.notes-item {
+  line-height: 32px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size: 16px;
+}
+
+.task-item {
+  margin-top: -0.5em;
+  margin-left: 0.5em;
+}

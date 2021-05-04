@@ -125,6 +125,7 @@
     <Compile Include="Models\NotesListItemModel.cs" />
     <Compile Include="Models\NotesListModel.cs" />
     <Compile Include="StorageManager.cs" />
+    <Compile Include="UI\LastSyncDateTimeConverter.cs" />
     <Compile Include="UI\NoteItemDataTemplateSelector.cs" />
     <Compile Include="UI\NoteItemView.xaml.cs">
       <DependentUpon>NoteItemView.xaml</DependentUpon>

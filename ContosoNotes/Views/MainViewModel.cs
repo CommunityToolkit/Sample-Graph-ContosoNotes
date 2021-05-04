@@ -3,10 +3,8 @@ using CommunityToolkit.Net.Graph.Extensions;
 using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Uwp.UI;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Threading;
 using Windows.System;
 
@@ -213,11 +211,14 @@ namespace ContosoNotes.Views
 
         private void OnTimerTick(DispatcherQueueTimer timer, object e)
         {
+            // TODO: Detect changes before saving. 
+
             Save();
         }
 
         private async void Save()
         {
+            // Find and update the note page title in the notes list.
             foreach (var item in _notesList.Items)
             {
                 if (item.NotePageId == _currentNotePage.Id)
@@ -227,13 +228,19 @@ namespace ContosoNotes.Views
                 }
             }
 
-            // Save any existing NotePage
-            await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
+            try
+            {
+                // Save any existing NotePage
+                await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
 
-            // Update the NotesList
-            await _storageManager.SaveNotesListAsync(_notesList);
+                // Update the NotesList
+                await _storageManager.SaveNotesListAsync(_notesList);
 
-            LastSync = DateTime.Now;
+                LastSync = DateTime.Now;
+            }
+            catch
+            {
+            }
         }
 
         private void OnKeywordDetected(object sender, KeywordDetectedEventArgs e)

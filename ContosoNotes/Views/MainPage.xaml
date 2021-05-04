@@ -14,10 +14,10 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <converters:BoolToVisibilityConverter
-            x:Key="InverseBoolToVisibilityConverter"
-            FalseValue="Visible"
-            TrueValue="Collapsed" />
+        <x:Boolean x:Key="Boolean_True">True</x:Boolean>
+        <x:Boolean x:Key="Boolean_False">False</x:Boolean>
+        
+        <ui:LastSyncDateTimeConverter x:Key="LastSyncDateTimeConverter" />
 
         <Style x:Key="CustomButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
@@ -52,16 +52,17 @@
 
             <Button
                 Command="{x:Bind ViewModel.TogglePaneCommand}"
-                Style="{StaticResource CustomButtonStyle}"
-                Visibility="{x:Bind ViewModel.IsPaneOpen, Mode=OneWay}">
-                <Image Source="ms-appx:///Assets/ClosePane.png" />
+                Style="{StaticResource CustomButtonStyle}">
+                <controls:SwitchPresenter Value="{x:Bind ViewModel.IsPaneOpen, Mode=OneWay}">
+                    <controls:Case Value="{StaticResource Boolean_True}">
+                        <Image Source="ms-appx:///Assets/ClosePane.png" />
+                    </controls:Case>
+                    <controls:Case Value="{StaticResource Boolean_False}">
+                        <Image Source="ms-appx:///Assets/OpenPane.png" />
+                    </controls:Case>
+                </controls:SwitchPresenter>
             </Button>
-            <Button
-                Command="{x:Bind ViewModel.TogglePaneCommand}"
-                Style="{StaticResource CustomButtonStyle}"
-                Visibility="{x:Bind ViewModel.IsPaneOpen, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}">
-                <Image Source="ms-appx:///Assets/OpenPane.png" />
-            </Button>
+
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <!--<Button Style="{StaticResource CustomButtonStyle}">
@@ -175,14 +176,10 @@
                                 VerticalAlignment="Bottom"
                                 Text="Sign in to sync your notes" />
                         </controls:Case>
-                        <controls:Case>
-                            <controls:Case.Value>
-                                <x:Boolean>True</x:Boolean>
-                            </controls:Case.Value>
-                            <TextBlock VerticalAlignment="Bottom">
-                                <Run Text="Synced, " />
-                                <Run Text="{x:Bind ViewModel.LastSync.Value.ToShortTimeString(), Mode=OneWay}" />
-                            </TextBlock>
+                        <controls:Case Value="{StaticResource Boolean_True}">
+                            <TextBlock 
+                                VerticalAlignment="Bottom" 
+                                Text="{x:Bind ViewModel.LastSync.Value, Mode=OneWay, Converter={StaticResource LastSyncDateTimeConverter}}" />
                         </controls:Case>
                     </controls:SwitchPresenter>
                 </Grid>

@@ -78,9 +78,6 @@ namespace ContosoNotes.Views
             KeywordDetector.Instance.RegisterKeyword("todo:");
             KeywordDetector.Instance.KeywordDetected += OnKeywordDetected;
 
-            //KeywordDetector.Instance.RegisterKey();
-            //KeywordDetector.Instance.KeyDetected += OnKeyDetected;
-
             ProviderManager.Instance.ProviderUpdated += OnProviderUpdated;
         }
 
@@ -107,7 +104,7 @@ namespace ContosoNotes.Views
             }
 
             var uri = new Uri("https://to-do.live.com/tasks/" + taskListId);
-            await Windows.System.Launcher.LaunchUriAsync(uri);
+            await Launcher.LaunchUriAsync(uri);
         }
 
         private void TogglePane()

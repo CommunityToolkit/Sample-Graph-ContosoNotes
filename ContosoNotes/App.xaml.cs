@@ -4,6 +4,8 @@ using ContosoNotes.Views;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -39,6 +41,8 @@ namespace ContosoNotes
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
                 Window.Current.Content = rootFrame;
+
+                ConfigureTitleBar();
             }
 
             if (e.PrelaunchActivated == false)
@@ -61,6 +65,19 @@ namespace ContosoNotes
         {
             string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite", "Files.ReadWrite" };
             ProviderManager.Instance.GlobalProvider = new WindowsProvider(scopes);
+        }
+
+        private void ConfigureTitleBar()
+        {
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.BackgroundColor = Colors.Black;
+            titleBar.ForegroundColor = Colors.White;
+            titleBar.ButtonBackgroundColor = Colors.Black;
+            titleBar.ButtonForegroundColor = Colors.White;
+            titleBar.InactiveBackgroundColor = Colors.Black;
+            titleBar.InactiveForegroundColor = Colors.White;
+            titleBar.ButtonInactiveBackgroundColor = Colors.Black;
+            titleBar.ButtonInactiveForegroundColor = Colors.White;
         }
 
         /// <summary>

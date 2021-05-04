@@ -204,6 +204,7 @@
     <Content Include="Assets\StoreLogo.scale-150.png" />
     <Content Include="Assets\StoreLogo.scale-200.png" />
     <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="Assets\Sync.png" />
     <Content Include="Assets\Todo.png" />
     <Content Include="Assets\Translate.png" />
     <Content Include="Assets\Undo.png" />

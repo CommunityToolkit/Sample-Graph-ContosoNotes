@@ -12,7 +12,7 @@ namespace ContosoNotes.UI
                 return "Edited " + dateTime.ToString("MMMM dd, yyyy, h:mmtt");
             }
 
-            return "Syncing...";
+            return string.Empty;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

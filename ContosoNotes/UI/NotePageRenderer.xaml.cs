@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 
 namespace ContosoNotes.UI
@@ -28,6 +29,14 @@ namespace ContosoNotes.UI
                 if (e.NewValue is NotePageModel newNotePageModel)
                 {
                     newNotePageModel.NoteItems.CollectionChanged += notePageRenderer.OnNoteItemsCollectionChanged;
+                    notePageRenderer.NoteItemsListView.ItemsSource = newNotePageModel.NoteItems;
+
+                    notePageRenderer.TitleTextBox.SetBinding(TextBox.TextProperty, new Binding()
+                    {
+                        Source = newNotePageModel,
+                        Path = new PropertyPath(nameof(NotePageModel.PageTitle)),
+                        Mode = BindingMode.TwoWay
+                    });
                 }
             }
         }

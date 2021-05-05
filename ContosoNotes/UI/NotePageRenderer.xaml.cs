@@ -51,7 +51,7 @@ namespace ContosoNotes.UI
                         else
                         {
                             TextNoteItemView newTextNoteItem = newItemContainer.FindDescendant<TextNoteItemView>();
-                            newTextNoteItem?.FocusEnd(FocusState.Programmatic);
+                            newTextNoteItem?.FocusEnd();
                         }
                     }
                 });
@@ -179,15 +179,15 @@ namespace ContosoNotes.UI
             int previousItemIndex = Math.Max(targetItemIndex - 1, 0);
             var previousItemContainer = NoteItemsListView.ContainerFromIndex(previousItemIndex) as FrameworkElement;
 
-            Control previousTaskNoteItem = previousItemContainer.FindDescendant<TaskNoteItemView>();
+            TaskNoteItemView previousTaskNoteItem = previousItemContainer.FindDescendant<TaskNoteItemView>();
             if (previousTaskNoteItem != null)
             {
-                previousTaskNoteItem.Focus(FocusState.Programmatic);
+                previousTaskNoteItem.FocusEnd();
             }
             else
             {
                 TextNoteItemView previousTextNoteItem = previousItemContainer.FindDescendant<TextNoteItemView>();
-                previousTextNoteItem?.FocusEnd(FocusState.Programmatic);
+                previousTextNoteItem?.FocusEnd();
             }
         }
     }

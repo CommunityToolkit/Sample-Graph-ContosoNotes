@@ -21,12 +21,10 @@ namespace ContosoNotes.UI
             InitializeComponent();
         }
 
-        public async void FocusEnd(FocusState focusState)
+        public async void FocusEnd()
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                //NoteItemTextBox.Focus(focusState);
-
                 NoteItemTextBox.SelectionStart = NoteItemTextBox.Text.Length;
             });
         }

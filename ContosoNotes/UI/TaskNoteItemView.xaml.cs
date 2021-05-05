@@ -1,4 +1,5 @@
 ﻿using ContosoNotes.Models;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.System;
@@ -27,6 +28,14 @@ namespace ContosoNotes.UI
             (Content as FrameworkElement).DataContext = this;
 
             GettingFocus += TaskNoteItemView_GettingFocus;
+        }
+
+        public async void FocusEnd()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                ItemText.SelectionStart = ItemText.Text.Length;
+            });
         }
 
         private void TaskNoteItemView_GettingFocus(UIElement sender, GettingFocusEventArgs args)

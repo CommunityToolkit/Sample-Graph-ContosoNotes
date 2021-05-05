@@ -4,7 +4,7 @@ using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using System;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading;
 using Windows.System;
 
@@ -14,11 +14,11 @@ namespace ContosoNotes.Views
     {
         private static SemaphoreSlim _mutex = new SemaphoreSlim(1);
 
+        public RelayCommand CreateNotePageCommand { get; }
+        public RelayCommand<TaskNoteItemModel> DeleteTaskCommand { get; }
         public RelayCommand LaunchMicrosoftTodoCommand { get; }
         public RelayCommand TogglePaneCommand { get; }
         public RelayCommand SaveCommand { get; }
-
-        public RelayCommand<TaskNoteItemModel> DeleteTaskCommand { get; }
 
         private bool _isPaneOpen;
         public bool IsPaneOpen
@@ -39,6 +39,13 @@ namespace ContosoNotes.Views
         {
             get => _notesList;
             set => SetProperty(ref _notesList, value);
+        }
+
+        private int _currentNotesListItemIndex;
+        public int CurrentNotesListItemIndex
+        {
+            get => _currentNotesListItemIndex;
+            set => SetProperty(ref _currentNotesListItemIndex, value);
         }
 
         private NotePageModel _currentNotePage;
@@ -62,6 +69,7 @@ namespace ContosoNotes.Views
         public MainViewModel()
         {
             LaunchMicrosoftTodoCommand = new(LaunchMicrosoftTodo);
+            CreateNotePageCommand = new(CreateNewNotePage);
             TogglePaneCommand = new(TogglePane);
             SaveCommand = new(Save);
             DeleteTaskCommand = new(DeleteTask);
@@ -79,6 +87,70 @@ namespace ContosoNotes.Views
             KeywordDetector.Instance.KeywordDetected += OnKeywordDetected;
 
             ProviderManager.Instance.ProviderUpdated += OnProviderUpdated;
+
+            PropertyChanged += OnPropertyChanged;
+        }
+
+        private async void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(LastSync))
+            {
+                return;
+            }
+
+            if (e.PropertyName == nameof(CurrentNotesListItemIndex) && _currentNotesListItemIndex != -1)
+            {
+                var currentNotesListItem = _notesList.Items[_currentNotesListItemIndex];
+                if (currentNotesListItem.NotePageId != _currentNotePage?.Id)
+                {
+                    try
+                    {
+                        CurrentNotePage = await _storageManager.GetNotePageAsync(currentNotesListItem);
+                    }
+                    catch
+                    {
+                        // Todo: Handle failure to load a note page from file
+                    }
+                }
+            }
+            else if (e.PropertyName == nameof(CurrentNotePage) && _notesList.Items.Count > 0)
+            {
+                var currentNotesListItem = _notesList.Items[_currentNotesListItemIndex];
+                if (_currentNotePage != null && _currentNotePage.Id != currentNotesListItem?.NotePageId)
+                {
+                    for (var i = 0; i < _notesList.Items.Count; i++)
+                    {
+                        var notesListItem = _notesList.Items[i];
+                        if (_currentNotePage.Id == notesListItem.NotePageId)
+                        {
+                            CurrentNotesListItemIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CreateNewNotePage()
+        {
+            // Create a new empty NotePageModel, with a fresh item ready for input
+            var newNotePage = new NotePageModel()
+            {
+                PageTitle = "New note",
+            };
+            newNotePage.NoteItems.Add(new NoteItemModel());
+
+            // Set the curernt page
+            CurrentNotePage = newNotePage;
+
+            // Update the NotesList
+            NotesList.Items.Add(new NotesListItemModel()
+            {
+                NotePageId = newNotePage.Id,
+                NotePageTitle = newNotePage.PageTitle,
+            });
+
+            CurrentNotesListItemIndex = NotesList.Items.Count - 1;
         }
 
         private async void LaunchMicrosoftTodo()
@@ -137,14 +209,20 @@ namespace ContosoNotes.Views
                     }
                     else
                     {
-                        // We have transitioned between local and roaming data, but there is already an active NotePage with content.
-                        // Save the progress (overriding any existing) and continue to use it as the current NotePage.
-                        await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
+                        try
+                        {
+                            // We have transitioned between local and roaming data, but there is already an active NotePage with content.
+                            // Save the progress (overriding any existing) and continue to use it as the current NotePage.
+                            await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
 
                 // Clear the notes list so we can repopulate it.
-                NotesList = new NotesListModel();
                 NotesList = await _storageManager.GetNotesListAsync();
 
                 // If we have notes in the list, attempt to pull the active/current note page.
@@ -152,38 +230,45 @@ namespace ContosoNotes.Views
                 {
                     if (_currentNotePage == null)
                     {
-                        CurrentNotePage = await _storageManager.GetCurrentNotePageAsync(_notesList);
+                        try
+                        {
+                            CurrentNotePage = await _storageManager.GetCurrentNotePageAsync(_notesList);
+                        }
+                        catch
+                        {
+                        }
                     }
 
                     if (_currentNotePage == null)
                     {
-                        // We didn't find a "current" page, so just grab the first one in the list.
-                        CurrentNotePage = await _storageManager.GetNotePageAsync(_notesList.Items[0]);
+                        try
+                        {
+                            // We didn't find a "current" page, so just grab the first one in the list.
+                            CurrentNotePage = await _storageManager.GetNotePageAsync(_notesList.Items[0]);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    if (_currentNotePage != null)
+                    {
+                        foreach (var item in _notesList.Items)
+                        {
+                            if (item.NotePageId == _currentNotePage.Id)
+                            {
+                                CurrentNotesListItemIndex = _notesList.Items.IndexOf(item);
+                                break;
+                            }
+                        }
+
+                        Save();
                     }
                 }
 
-                if (_currentNotePage != null)
+                if (_currentNotePage == null)
                 {
-                    // Just making sure we are all synced up.
-                    await _storageManager.SaveCurrentNotePageAsync(_currentNotePage);
-                }
-                else
-                {
-                    // Create a new empty NotePageModel, with a fresh item ready for input
-                    CurrentNotePage = new NotePageModel()
-                    {
-                        PageTitle = "New note",
-                        NoteItems = new ObservableCollection<NoteItemModel>()
-                        {
-                            new NoteItemModel()
-                        }
-                    };
-
-                    NotesList.Items.Add(new NotesListItemModel()
-                    {
-                        NotePageId = CurrentNotePage.Id,
-                        NotePageTitle = CurrentNotePage.PageTitle,
-                    });
+                    CreateNewNotePage();
                 }
 
                 InitSaveTimer();
@@ -215,6 +300,11 @@ namespace ContosoNotes.Views
 
         private async void Save()
         {
+            if (_currentNotePage == null || _currentNotePage.IsEmpty)
+            {
+                return;
+            }
+
             // Find and update the note page title in the notes list.
             foreach (var item in _notesList.Items)
             {

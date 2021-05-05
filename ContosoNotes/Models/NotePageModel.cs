@@ -21,23 +21,24 @@ namespace ContosoNotes.Models
         public ObservableCollection<NoteItemModel> NoteItems 
         {
             get => _noteItems;
-            set => SetProperty(ref _noteItems, value);
+            private set => SetProperty(ref _noteItems, value);
         }
 
         [JsonIgnore]
-        public bool IsEmpty => _noteItems == null || _noteItems.Count == 0 || (_noteItems.Count == 1 && string.IsNullOrWhiteSpace(_noteItems[0].Text));
+        public bool IsEmpty => string.IsNullOrEmpty(_pageTitle) && (_noteItems.Count == 0 || (_noteItems.Count == 1 && string.IsNullOrWhiteSpace(_noteItems[0].Text)));
 
         public NotePageModel()
         {
             Id = Guid.NewGuid().ToString();
-            NoteItems = new ObservableCollection<NoteItemModel>();
+            _pageTitle = string.Empty;
+            _noteItems = new ObservableCollection<NoteItemModel>();
         }
 
         public NotePageModel(string id = null, string pageTitle = null, IEnumerable<NoteItemModel> noteItems = null)
         {
             Id = id ?? Guid.NewGuid().ToString();
-            PageTitle = pageTitle;
-            NoteItems = noteItems != null ? new ObservableCollection<NoteItemModel>(noteItems) : new ObservableCollection<NoteItemModel>();
+            _pageTitle = pageTitle;
+            _noteItems = noteItems != null ? new ObservableCollection<NoteItemModel>(noteItems) : new ObservableCollection<NoteItemModel>();
         }
     }
 }

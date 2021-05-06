@@ -15,6 +15,7 @@ namespace ContosoNotes.Views
         private static SemaphoreSlim _mutex = new SemaphoreSlim(1);
 
         public RelayCommand CreateNotePageCommand { get; }
+        public RelayCommand DeleteCurrentNotePageCommand { get; }
         public RelayCommand<TaskNoteItemModel> DeleteTaskCommand { get; }
         public RelayCommand LaunchMicrosoftTodoCommand { get; }
         public RelayCommand TogglePaneCommand { get; }
@@ -70,6 +71,7 @@ namespace ContosoNotes.Views
         {
             LaunchMicrosoftTodoCommand = new(LaunchMicrosoftTodo);
             CreateNotePageCommand = new(CreateNewNotePage);
+            DeleteCurrentNotePageCommand = new(DeleteCurrentNotePage);
             TogglePaneCommand = new(TogglePane);
             SaveCommand = new(Save);
             DeleteTaskCommand = new(DeleteTask);
@@ -131,6 +133,16 @@ namespace ContosoNotes.Views
             }
         }
 
+        private void DeleteCurrentNotePage()
+        {
+            // We don't actually delete the notes, but they do become orphaned by removing them from the notes list.
+            NotesList.Items.RemoveAt(_currentNotesListItemIndex);
+
+            CurrentNotesListItemIndex = Math.Max(0, _currentNotesListItemIndex - 1);
+
+            Save();
+        }
+
         private void CreateNewNotePage()
         {
             // Create a new empty NotePageModel, with a fresh item ready for input
@@ -150,7 +162,7 @@ namespace ContosoNotes.Views
                 NotePageTitle = newNotePage.PageTitle,
             });
 
-            CurrentNotesListItemIndex = NotesList.Items.Count - 1;
+            CurrentNotesListItemIndex = Math.Max(0, NotesList.Items.Count - 1);
         }
 
         private async void LaunchMicrosoftTodo()

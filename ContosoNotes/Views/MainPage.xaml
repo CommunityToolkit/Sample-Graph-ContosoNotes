@@ -76,11 +76,13 @@
                 </Button>
                 <Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Font.png" />
-                </Button>
-                <Button Style="{StaticResource CustomButtonStyle}">
+                </Button>-->
+                <Button
+                    Command="{x:Bind ViewModel.DeleteCurrentNotePageCommand}"
+                    Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Discard.png" />
                 </Button>
-                <Button Style="{StaticResource CustomButtonStyle}">
+                <!--<Button Style="{StaticResource CustomButtonStyle}">
                     <Image Source="ms-appx:///Assets/Attach.png" />
                 </Button>
                 <Button Style="{StaticResource CustomButtonStyle}">

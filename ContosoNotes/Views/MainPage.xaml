@@ -9,7 +9,6 @@
     xmlns:models="using:ContosoNotes.Models"
     xmlns:ui="using:ContosoNotes.UI" 
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls" 
-    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -17,11 +16,6 @@
     <Page.Resources>
         <x:Boolean x:Key="Boolean_True">True</x:Boolean>
         <x:Boolean x:Key="Boolean_False">False</x:Boolean>
-
-        <converters:BoolToVisibilityConverter
-            x:Key="InverseBoolToVisibilityConverter"
-            FalseValue="Visible"
-            TrueValue="Collapsed" />
 
         <ui:LastSyncDateTimeConverter x:Key="LastSyncDateTimeConverter" />
 

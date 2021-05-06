@@ -243,14 +243,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Net.Authentication">
-      <Version>7.0.0-build.86</Version>
-    </PackageReference>
     <PackageReference Include="CommunityToolkit.Uwp.Authentication">
-      <Version>7.0.0-build.86</Version>
+      <Version>7.0.0-build.88</Version>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Uwp.Graph.Controls">
-      <Version>7.0.0-build.86</Version>
+      <Version>7.0.0-build.88</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>

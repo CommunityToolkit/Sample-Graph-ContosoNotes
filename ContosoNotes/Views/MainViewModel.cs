@@ -88,11 +88,11 @@ namespace ContosoNotes.Views
             var provider = ProviderManager.Instance.GlobalProvider;
             if (provider != null && provider.State == ProviderState.SignedIn)
             {
-                var graph = ProviderManager.Instance.GlobalProvider.Graph();
+                var graphClient = ProviderManager.Instance.GlobalProvider.GetClient();
 
                 try
                 {
-                    var existingLists = await graph.Me.Todo.Lists.Request().Filter("displayName eq 'ContosoNotes'").GetAsync();
+                    var existingLists = await graphClient.Me.Todo.Lists.Request().Filter("displayName eq 'ContosoNotes'").GetAsync();
                     if (existingLists.Count > 0)
                     {
                         taskListId = existingLists[0].Id;

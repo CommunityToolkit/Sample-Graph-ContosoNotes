@@ -90,12 +90,12 @@ namespace ContosoNotes.Models
                     var provider = ProviderManager.Instance.GlobalProvider;
                     if (provider != null && provider.State == ProviderState.SignedIn)
                     {
-                        var graph = ProviderManager.Instance.GlobalProvider.Graph();
+                        var graphClient = ProviderManager.Instance.GlobalProvider.GetClient();
 
                         try
                         {
                             // Retrieve the task.
-                            TodoTask = await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().GetAsync();
+                            TodoTask = await graphClient.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().GetAsync();
                             IsCompleted = TodoTask.Status == TaskStatus.Completed;
                         }
                         catch
@@ -128,7 +128,7 @@ namespace ContosoNotes.Models
                 var provider = ProviderManager.Instance.GlobalProvider;
                 if (provider != null && provider.State == ProviderState.SignedIn)
                 {
-                    var graph = ProviderManager.Instance.GlobalProvider.Graph();
+                    var graph = ProviderManager.Instance.GlobalProvider.GetClient();
 
                     if (TodoTaskListId == null)
                     {
@@ -211,7 +211,7 @@ namespace ContosoNotes.Models
                 var provider = ProviderManager.Instance.GlobalProvider;
                 if (provider != null && provider.State == ProviderState.SignedIn)
                 {
-                    var graph = ProviderManager.Instance.GlobalProvider.Graph();
+                    var graph = ProviderManager.Instance.GlobalProvider.GetClient();
 
                     await graph.Me.Todo.Lists[TodoTaskListId].Tasks[TodoTaskId].Request().DeleteAsync();
                 }

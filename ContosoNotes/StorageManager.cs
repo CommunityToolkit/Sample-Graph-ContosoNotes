@@ -119,9 +119,18 @@ namespace ContosoNotes
         {
             var notePageFileName = GetNotePageFileName(notesListItemModel);
 
-            return _roamingStorageHelper != null
-                ? await _roamingStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName)
-                : await _localStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
+            if (_roamingStorageHelper != null)
+            {
+                try
+                {
+                    return await _roamingStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
+                }
+                catch
+                {
+                }
+            }
+
+            return await _localStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
         }
 
         private async Task<NotePageModel> GetCurrentNotePage(IObjectStorageHelper storageHelper, NotesListModel notesList)

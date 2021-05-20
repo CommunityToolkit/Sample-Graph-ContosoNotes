@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@microsoft/mgt-element": "^2.2.0-preview.9f2ad63",
-    "@microsoft/mgt-msal2-provider": "^2.2.0-preview.9f2ad63",
-    "@microsoft/mgt-react": "^2.2.0-preview.9f2ad63",
+    "@microsoft/mgt-element": "^2.2.0",
+    "@microsoft/mgt-msal2-provider": "^2.2.0",
+    "@microsoft/mgt-react": "^2.2.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

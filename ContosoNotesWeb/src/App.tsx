@@ -84,7 +84,7 @@ function Note(props: any) {
   const {noteItems, title} = props;
 
   return <div className="notes-container">
-    <h1 className="note-title" contentEditable>
+    <h1 className="note-title">
       {title}
     </h1>
     {noteItems.map((note: any, index: number) => (
@@ -100,7 +100,7 @@ function NoteItem(props: any) {
     return <TodoNoteItem note={note}/>
   }
 
-  return <div className="notes-item" contentEditable dangerouslySetInnerHTML={getHtmlFromText(note.Text)}></div>
+  return <div className="notes-item" dangerouslySetInnerHTML={getHtmlFromText(note.Text)}></div>
 }
 
 function TodoNoteItem(props: any) {
@@ -143,7 +143,7 @@ function TodoNoteItem(props: any) {
 
   return <div className="notes-item task-item">
     <input disabled={loading} type="checkbox" checked={state.IsCompleted} onChange={onCompletedChanged} />
-    <span contentEditable>{state.Text}</span>
+    <span>{state.Text}</span>
   </div>
 }
 

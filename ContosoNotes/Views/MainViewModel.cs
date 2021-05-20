@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Net.Authentication;
-using CommunityToolkit.Net.Graph.Extensions;
+using CommunityToolkit.Authentication;
+using CommunityToolkit.Graph.Extensions;
 using ContosoNotes.Models;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -16,7 +16,7 @@ namespace ContosoNotes.Views
 {
     public class MainViewModel : ObservableObject
     {
-        private static SemaphoreSlim _mutex = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _mutex = new (1);
 
         public RelayCommand CreateNotePageCommand { get; }
         public RelayCommand DeleteCurrentNotePageCommand { get; }
@@ -67,9 +67,9 @@ namespace ContosoNotes.Views
             set => SetProperty(ref _lastSync, value);
         }
 
-        private StorageManager _storageManager;
-        private DispatcherQueue _dispatcherQueue;
-        private DispatcherQueueTimer _timer;
+        private readonly StorageManager _storageManager;
+        private readonly DispatcherQueue _dispatcherQueue;
+        private readonly DispatcherQueueTimer _timer;
 
         public MainViewModel()
         {
@@ -381,14 +381,14 @@ namespace ContosoNotes.Views
                     else
                     {
                         // Otherwise we insert a new text note
-                        NoteItemModel postItem = new NoteItemModel(e.PostText);
+                        var postItem = new NoteItemModel(e.PostText);
                         CurrentNotePage.NoteItems.Insert(noteItemIndex, postItem);
                     }
                 }
                 else if (++noteItemIndex == CurrentNotePage.NoteItems.Count)
                 {
                     // If we're at the end we also want a blank note to help for navigating
-                    NoteItemModel postItem = new NoteItemModel(" ");
+                    var postItem = new NoteItemModel(" ");
                     CurrentNotePage.NoteItems.Insert(noteItemIndex, postItem);
                 }
             }

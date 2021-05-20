@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Net.Authentication;
-using CommunityToolkit.Net.Graph.Extensions;
+using CommunityToolkit.Authentication;
+using CommunityToolkit.Graph.Extensions;
 using ContosoNotes.Common;
 using Microsoft.Graph;
 using Microsoft.Toolkit.Uwp.UI;
@@ -17,7 +17,7 @@ namespace ContosoNotes.Models
 {
     public class TaskNoteItemModel : NoteItemModel
     {
-        private static SemaphoreSlim _mutex = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _mutex = new (1);
 
         public string TodoTaskId { get; set; }
 
@@ -36,7 +36,7 @@ namespace ContosoNotes.Models
         [JsonIgnore]
         public LoadingState LoadingState { get; protected set; }
 
-        private DispatcherQueueTimer _timer;
+        private readonly DispatcherQueueTimer _timer;
 
         public TaskNoteItemModel()
         {

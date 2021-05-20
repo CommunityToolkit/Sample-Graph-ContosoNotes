@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Net.Authentication;
-using CommunityToolkit.Uwp.Authentication;
+using CommunityToolkit.Authentication;
 using ContosoNotes.Views;
 using System;
 using Windows.ApplicationModel;
@@ -38,8 +37,7 @@ namespace ContosoNotes
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Frame rootFrame = Window.Current.Content as Frame;
-            if (rootFrame == null)
+            if (Window.Current.Content is not Frame rootFrame)
             {
                 rootFrame = new Frame();
                 rootFrame.NavigationFailed += OnNavigationFailed;

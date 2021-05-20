@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="1206Weaver.ContosoNotes"
-    Publisher="CN=837C3C71-9A7D-469F-8F51-7E72CC6915ED"
+    Name="c3d18aa6-3a1e-4570-942e-d00904db2c91"
+    Publisher="CN=Microsoft"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="99ae8261-4ea4-42b5-bfca-f44f1f0863c4" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="c3d18aa6-3a1e-4570-942e-d00904db2c91" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>ContosoNotes</DisplayName>
-    <PublisherDisplayName>Weaver</PublisherDisplayName>
+    <DisplayName>Contoso Notes</DisplayName>
+    <PublisherDisplayName>Microsoft</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

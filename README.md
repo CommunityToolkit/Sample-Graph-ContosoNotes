@@ -2,7 +2,7 @@
 
 Contoso Notes is a simple note taking app infused with the power of Microsoft Graph!
 
-Built for the [build session name here]()
+Built for the [Enlighten your Windows App with Microsoft Graph](https://aka.ms/OD531)
 
 In Contoso Notes you can:
 
@@ -10,7 +10,14 @@ In Contoso Notes you can:
 - Keep multiple note pages backed up to OneDrive so notes will roam across devices.
 - Type the magic word `todo:` to create new tasks that are stored in Microsoft Todo and stay synchronized. 
 
-## Introducing Windows Authentication Toolkit
+## Demo Setup
+
+The demo code can be easily built and deployed in Visual Studio 2019. However, for the WindowsProvider to work, you must associate the app with the Microsoft Store.
+This creates the trust relationship that enables your app to authenticate and retrieve valid access tokens. No AAD configuration required for consumer MSAs!
+
+Alternatively, if you do not wish to register with the Store, the MsalProvider can be used instead. However, you will still need to register the app with Azure AAD to get a clientId. This is the more traditional approach and supports both account types, consumer and organizational.
+
+## Microsoft authentication and Microsoft Graph helpers in the Windows Community Toolkit
 
 All of the Graph interaction in Contoso Notes is based on the new authentication providers and extensions in the Windows Community Toolkit's latest additions:
 
@@ -26,7 +33,7 @@ building new Graph experiences and less on token management.
 using CommunityToolkit.Authentication;
 using CommunityToolkit.Graph.Extensions;
 
-// Create and set the global authentciation provider.
+// Create and set the global authentication provider.
 IProvider provider = new MsalProvider(clientId, scopes);
 ProviderManager.Instance.GlobalProvider = provider;
 
@@ -52,9 +59,4 @@ Check out the Windows Community Toolkit docs for more details: [Introduction to 
 ## Microsoft Graph Toolkit for Web
 For web solutions, check out the [Microsoft Graph Toolkit](https://docs.microsoft.com/en-us/graph/toolkit/overview); A web component library for building Graph powered experiences in HTML and JavaScript. 
 
-## Demo Setup
 
-The demo code can be easily built and deployed in Visual Studio 2019. However, for the WindowsProvider to work, you must associate the app with the Microsoft Store.
-This creates the trust relationship that enables your app to authenticate and retrieve valid access tokens. No AAD configuration required for consumer MSAs!
-
-Alternatively, if you do not wish to register with the Store, the MsalProvider can be used instead. However, you will still need to register the app with Azure AAD to get a clientId. This is the more traditional approach and supports both account types, consumer and organizational.

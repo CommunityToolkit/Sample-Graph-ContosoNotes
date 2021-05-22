@@ -12,9 +12,9 @@ This page contains resources for getting started with Microsoft Graph in your Wi
 ## UWP/WPF/.NET
 
 - **[Preview] [Windows Community Toolkit authentication and Microsoft Graph helpers](https://github.com/windows-toolkit/Graph-Controls)** - couple lines of code to authenticate users and call Microsoft Graph, built on top of MSAL and the Microsoft Graph libraries for .NET
-  - Get started with WindowsProvider for UWP - [link to guide and/or sample]
-  - Get started with MsalProvider for UWP - [link to guide and/or sample]
-  - Get started with MsalProvider for WPF - [link to guide and/or sample]
+  - Get started with [WindowsProvider](https://docs.microsoft.com/en-us/windows/communitytoolkit/graph/authentication/uwp/windowsprovider) for UWP - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/UwpWindowsProviderSample)
+  - Get started with [MsalProvider](https://docs.microsoft.com/en-us/windows/communitytoolkit/graph/authentication/msal/msalprovider) for UWP - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/UwpMsalProviderSample)
+  - Get started with [MsalProvider](https://docs.microsoft.com/en-us/windows/communitytoolkit/graph/authentication/msal/msalprovider) for WPF - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/WpfMsalProviderSample)
 
 ### Alternatively, use the .NET libraries directly
 

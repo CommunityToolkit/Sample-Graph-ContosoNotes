@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace ContosoNotes.Views
 {
@@ -14,11 +13,6 @@ namespace ContosoNotes.Views
         public MainPage()
         {
             InitializeComponent();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            ViewModel.Load();
         }
     }
 }

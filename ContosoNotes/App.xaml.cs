@@ -55,18 +55,7 @@ namespace ContosoNotes
                 }
 
                 Window.Current.Activate();
-
-                InitializeGlobalProvider();
             }
-        }
-
-        /// <summary>
-        /// Initialize the global authentication provider.
-        /// </summary>
-        private void InitializeGlobalProvider()
-        {
-            string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite", "Files.ReadWrite" };
-            ProviderManager.Instance.GlobalProvider = new WindowsProvider(scopes);
         }
 
         private void ConfigureTitleBar()

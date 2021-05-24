@@ -62,8 +62,10 @@ namespace ContosoNotes
 
         public async Task<NotesListModel> GetNotesListAsync()
         {
-            var notesList = new NotesListModel();
+            var notesListItems = new List<NotesListItemModel>();
             var notesListItemsDict = new Dictionary<string, int>();
+
+            bool updateNotesList = false;
 
             // Get any remote notes.
             var remoteNotes = await GetNotesListAsync(_roamingStorageHelper);
@@ -72,7 +74,7 @@ namespace ContosoNotes
                 for (var i = 0; i < remoteNotes.Items.Count; i++)
                 {
                     var notesListItem = remoteNotes.Items[i];
-                    notesList.Items.Add(notesListItem);
+                    notesListItems.Add(notesListItem);
                     notesListItemsDict.Add(notesListItem.NotePageId, i);
                 }
             }
@@ -81,17 +83,23 @@ namespace ContosoNotes
             var localNotes = await GetNotesListAsync(_localStorageHelper);
             if (localNotes != null)
             {
-                bool updateNotesList = false;
                 foreach (var notesListItem in localNotes.Items)
                 {
                     if (!notesListItemsDict.ContainsKey(notesListItem.NotePageId))
                     {
-                        notesList.Items.Add(notesListItem);
+                        notesListItems.Add(notesListItem);
 
                         // Sync these notes back to the remote, if available.
                         updateNotesList = true;
                     }
                 }
+            }
+
+            NotesListModel notesList = null;
+
+            if (notesListItems.Count > 0)
+            {
+                notesList = new NotesListModel(notesListItems);
 
                 if (updateNotesList)
                 {

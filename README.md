@@ -2,7 +2,7 @@
 
 Contoso Notes is a simple note taking app infused with the power of Microsoft Graph!
 
-Built for the [Enlighten your Windows App with Microsoft Graph](https://aka.ms/OD531)
+Built for the [Enlighten your Windows App with Microsoft Graph](https://aka.ms/OD531) session at Microsoft Build.
 
 In Contoso Notes you can:
 
@@ -50,13 +50,11 @@ string token = await provider.GetTokenAsync();
 
 ## Built with the Windows Community Toolkit
 
-Windows Community Toolkit is the easiest way to get started on Windows building first class applications with standardized and proven paradigms created by Microsoft and the community. In this demo we've leveraged WCT for common needs such as
+Windows Community Toolkit is the easiest way to get started on Windows building first class applications with standardized and proven paradigms created by Microsoft and the community. In this demo we've leveraged WCT heavily for common needs such as converters, extensions, and UI controls.
 
 This demo also leverages the new MVVM helpers in the `Microsoft.Toolkit.MVVM` package. We've integrated with RelayCommand and ObservableObject to support the View-ViewModel relationship.
 
 Check out the Windows Community Toolkit docs for more details: [Introduction to the MVVM Toolkit](https://docs.microsoft.com/en-us/windows/communitytoolkit/mvvm/introduction)
 
 ## Microsoft Graph Toolkit for Web
-For web solutions, check out the [Microsoft Graph Toolkit](https://docs.microsoft.com/en-us/graph/toolkit/overview); A web component library for building Graph powered experiences in HTML and JavaScript. 
-
-
+For web solutions, check out the [Microsoft Graph Toolkit](https://docs.microsoft.com/en-us/graph/toolkit/overview); A web component library for building Graph powered experiences in HTML and JavaScript.

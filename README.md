@@ -12,10 +12,10 @@ In Contoso Notes you can:
 
 ## Demo Setup
 
-The demo code can be easily built and deployed in Visual Studio 2019. However, for the WindowsProvider to work, you must associate the app with the Microsoft Store.
+The demo code can be easily built and deployed in Visual Studio 2019. However, for the `WindowsProvider` to work, you must associate the app with the Microsoft Store.
 This creates the trust relationship that enables your app to authenticate and retrieve valid access tokens. No AAD configuration required for consumer MSAs!
 
-Alternatively, if you do not wish to register with the Store, the MsalProvider can be used instead. However, you will still need to register the app with Azure AAD to get a clientId. This is the more traditional approach and supports both account types, consumer and organizational.
+Alternatively, if you do not wish to register with the Store, the `MsalProvider` can be used instead. However, you will still need to register the app with Azure AAD to get a `clientId`. This is the more traditional approach and supports both account types, consumer and organizational.
 
 ## Microsoft authentication and Microsoft Graph helpers in the Windows Community Toolkit
 
@@ -29,7 +29,7 @@ All of the Graph interaction in Contoso Notes is based on the new authentication
 The new authentication providers in the Windows Community Toolkit make it EASY to get authenticated and make Graph requests, so you can focus more on 
 building new Graph experiences and less on token management.
 
-```
+```cs
 using CommunityToolkit.Authentication;
 using CommunityToolkit.Graph.Extensions;
 
@@ -48,13 +48,15 @@ var me = await graphClient.Me.Request().GetAsync();
 string token = await provider.GetTokenAsync();
 ```
 
+You can find out more about these new authentication and graph helpers [here](https://aka.ms/wgt).
+
 ## Built with the Windows Community Toolkit
 
-Windows Community Toolkit is the easiest way to get started on Windows building first class applications with standardized and proven paradigms created by Microsoft and the community. In this demo we've leveraged WCT heavily for common needs such as converters, extensions, and UI controls.
+The [Windows Community Toolkit](https://aka.ms/windowstoolkit) is the easiest way to get started on Windows building first class applications with standardized and proven paradigms created by Microsoft and the community. In this demo we've leveraged WCT heavily for common needs such as converters, extensions, and UI controls.
 
-This demo also leverages the new MVVM helpers in the `Microsoft.Toolkit.MVVM` package. We've integrated with RelayCommand and ObservableObject to support the View-ViewModel relationship.
+This demo also leverages the new [MVVM Toolkit](https://aka.ms/mvvmtoolkit) in the `Microsoft.Toolkit.MVVM` package. We've integrated with `RelayCommand` and `ObservableObject` to support the View-ViewModel relationship.
 
-Check out the Windows Community Toolkit docs for more details: [Introduction to the MVVM Toolkit](https://docs.microsoft.com/en-us/windows/communitytoolkit/mvvm/introduction)
+Check out the Windows Community Toolkit docs for more details: [Introduction to the MVVM Toolkit](https://aka.ms/mvvmtoolkit/docs)
 
 ## Microsoft Graph Toolkit for Web
-For web solutions, check out the [Microsoft Graph Toolkit](https://docs.microsoft.com/en-us/graph/toolkit/overview); A web component library for building Graph powered experiences in HTML and JavaScript.
+For web solutions, check out the [Microsoft Graph Toolkit](https://aka.ms/mgt/docs); A web component library for building Graph powered experiences in HTML and JavaScript.

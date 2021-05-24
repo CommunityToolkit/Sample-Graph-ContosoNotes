@@ -5,6 +5,13 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContosoNotes", "ContosoNotes.csproj", "{68F73517-249F-480A-A15F-26836D76ACEB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Information", "Sample Information", "{28E52C77-F04D-4FBD-9010-96C0011F5149}"
+	ProjectSection(SolutionItems) = preProject
+		..\license.md = ..\license.md
+		..\README.md = ..\README.md
+		..\windows+graph.md = ..\windows+graph.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM

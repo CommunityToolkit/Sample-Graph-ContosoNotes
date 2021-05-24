@@ -11,10 +11,10 @@ This page contains resources for getting started with Microsoft Graph in your Wi
 
 ## UWP/WPF/.NET
 
-- **[Preview] [Windows Community Toolkit authentication and Microsoft Graph helpers](https://github.com/windows-toolkit/Graph-Controls)** - couple lines of code to authenticate users and call Microsoft Graph, built on top of MSAL and the Microsoft Graph libraries for .NET
-  - Get started with [WindowsProvider](https://docs.microsoft.com/en-us/windows/communitytoolkit/graph/authentication/uwp/windowsprovider) for UWP - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/UwpWindowsProviderSample)
-  - Get started with [MsalProvider](https://docs.microsoft.com/en-us/windows/communitytoolkit/graph/authentication/msal/msalprovider) for UWP - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/UwpMsalProviderSample)
-  - Get started with [MsalProvider](https://docs.microsoft.com/en-us/windows/communitytoolkit/graph/authentication/msal/msalprovider) for WPF - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/WpfMsalProviderSample)
+- **[Preview] [Windows Community Toolkit authentication and Microsoft Graph helpers](https://aka.ms/wgt)** - couple lines of code to authenticate users and call Microsoft Graph, built on top of MSAL and the Microsoft Graph libraries for .NET
+  - Get started with [WindowsProvider](https://docs.microsoft.com/windows/communitytoolkit/graph/authentication/uwp/windowsprovider) for UWP - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/UwpWindowsProviderSample)
+  - Get started with [MsalProvider](https://docs.microsoft.com/windows/communitytoolkit/graph/authentication/msal/msalprovider) for UWP - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/UwpMsalProviderSample)
+  - Get started with [MsalProvider](https://docs.microsoft.com/windows/communitytoolkit/graph/authentication/msal/msalprovider) for WPF - [Sample](https://github.com/windows-toolkit/Graph-Controls/tree/main/Samples/WpfMsalProviderSample)
 
 ### Alternatively, use the .NET libraries directly
 
@@ -30,7 +30,7 @@ This page contains resources for getting started with Microsoft Graph in your Wi
   - [Get started (vanilla JS)](https://docs.microsoft.com/graph/toolkit/get-started/build-a-web-app)
   - [Get started (React)](https://docs.microsoft.com/graph/toolkit/get-started/use-toolkit-with-react)
   - [Get started (Angular)](https://docs.microsoft.com/graph/toolkit/get-started/use-toolkit-with-angular)
-  - [Get started for Electron](https://docs.microsoft.com/en-us/graph/toolkit/get-started/build-an-electron-app)
+  - [Get started for Electron](https://docs.microsoft.com/graph/toolkit/get-started/build-an-electron-app)
 
 ### Alternatively, use the JS/TS libraries directly
 

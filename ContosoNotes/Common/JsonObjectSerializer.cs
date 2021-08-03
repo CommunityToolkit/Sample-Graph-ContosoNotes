@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Toolkit.Uwp.Helpers;
+using Microsoft.Toolkit.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Reflection;
@@ -14,13 +14,13 @@ namespace ContosoNotes.Common
     /// </summary>
     public class JsonObjectSerializer : IObjectSerializer
     {
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
+        private readonly JsonSerializerSettings _serializerSettings = new ()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             Formatting = Formatting.Indented
         };
 
-    public T Deserialize<T>(object value)
+        public T Deserialize<T>(string value)
         {
             var type = typeof(T);
             var typeInfo = type.GetTypeInfo();
@@ -35,7 +35,7 @@ namespace ContosoNotes.Common
             return JsonConvert.DeserializeObject<T>((string)value, _serializerSettings);
         }
 
-        public object Serialize<T>(T value)
+        public string Serialize<T>(T value)
         {
             var type = typeof(T);
             var typeInfo = type.GetTypeInfo();
@@ -44,7 +44,7 @@ namespace ContosoNotes.Common
             // This if/return combo is to maintain compatibility with 6.1.1
             if (typeInfo.IsPrimitive || type == typeof(string))
             {
-                return value;
+                return value.ToString();
             }
 
             return JsonConvert.SerializeObject(value, _serializerSettings);

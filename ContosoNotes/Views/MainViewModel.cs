@@ -104,7 +104,7 @@ namespace ContosoNotes.Views
         /// </summary>
         private void InitializeGlobalProvider()
         {
-            ProviderManager.Instance.ProviderUpdated += OnProviderUpdated;
+            ProviderManager.Instance.ProviderStateChanged += OnProviderStateChanged;
 
             string[] scopes = new string[] { "User.Read", "Tasks.ReadWrite", "Files.ReadWrite" };
             ProviderManager.Instance.GlobalProvider = new WindowsProvider(scopes);
@@ -173,6 +173,11 @@ namespace ContosoNotes.Views
             Save();
         }
 
+        private void CreateNotesList()
+        {
+            NotesList = new NotesListModel();
+        }
+
         private void CreateNewNotePage()
         {
             // Create a new empty NotePageModel, with a fresh item ready for input
@@ -184,24 +189,16 @@ namespace ContosoNotes.Views
 
             if (_notesList == null)
             {
-                NotesList = new NotesListModel(new List<NotesListItemModel>() {
-                    new NotesListItemModel()
-                    {
-                        NotePageId = newNotePage.Id,
-                        NotePageTitle = newNotePage.PageTitle,
-                    } 
-                });
-            }
-            else
-            {
-                // Update the NotesList
-                NotesList.Items.Insert(0, new NotesListItemModel()
-                {
-                    NotePageId = newNotePage.Id,
-                    NotePageTitle = newNotePage.PageTitle,
-                });
+                CreateNotesList();
             }
 
+            // Update the NotesList
+            NotesList.Items.Insert(0, new NotesListItemModel()
+            {
+                NotePageId = newNotePage.Id,
+                NotePageTitle = newNotePage.PageTitle,
+            });
+            
             // Set the current page
             CurrentNotePage = newNotePage;
             CurrentNotesListItemIndex = 0;
@@ -238,7 +235,7 @@ namespace ContosoNotes.Views
             IsPaneOpen = !IsPaneOpen;
         }
 
-        private void OnProviderUpdated(object sender, ProviderUpdatedEventArgs e)
+        private void OnProviderStateChanged(object sender, ProviderStateChangedEventArgs e)
         {
             IsSignedIn = ProviderManager.Instance.GlobalProvider?.State == ProviderState.SignedIn;
 
@@ -283,8 +280,13 @@ namespace ContosoNotes.Views
             {
             }
 
+            if (_notesList == null)
+            {
+                CreateNotesList();
+            }
+
             // If we have notes in the list, attempt to pull the active/current note page.
-            if (_notesList != null && _notesList.Items.Count > 0)
+            if (_notesList.Items.Count > 0)
             {
                 if (_currentNotePage == null)
                 {
@@ -358,6 +360,11 @@ namespace ContosoNotes.Views
             if (_currentNotePage == null || _currentNotePage.IsEmpty)
             {
                 return;
+            }
+
+            if (_notesList == null)
+            {
+                
             }
 
             // Find and update the note page title in the notes list.

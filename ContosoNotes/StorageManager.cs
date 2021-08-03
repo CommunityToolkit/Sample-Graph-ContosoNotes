@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Authentication;
-using CommunityToolkit.Graph.Uwp.Helpers.RoamingSettings;
+using CommunityToolkit.Graph.Helpers.RoamingSettings;
 using ContosoNotes.Common;
 using ContosoNotes.Models;
+using Microsoft.Toolkit.Helpers;
 using Microsoft.Toolkit.Uwp.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,17 +15,18 @@ namespace ContosoNotes
 {
     public class StorageManager
     {
-        private readonly IObjectSerializer _serializer;
-        private readonly LocalObjectStorageHelper _localStorageHelper;
-        private RoamingSettingsHelper _roamingStorageHelper;
+        private readonly Microsoft.Toolkit.Helpers.IObjectSerializer _serializer;
+        private readonly ApplicationDataStorageHelper _localStorage;
+        private IFileStorageHelper _remoteFileStorage;
+        private ISettingsStorageHelper<string> _remoteSettingsStorage;
 
         public StorageManager()
         {
             _serializer = new JsonObjectSerializer();
-            _localStorageHelper = new LocalObjectStorageHelper(_serializer);
+            _localStorage = Microsoft.Toolkit.Uwp.Helpers.ApplicationDataStorageHelper.GetCurrent(_serializer);
 
-            ProviderManager.Instance.ProviderUpdated += (s, e) => InitRoamingSettingsHelper();
-            InitRoamingSettingsHelper();
+            ProviderManager.Instance.ProviderStateChanged += (s, e) => _ = InitRoamingSettingsHelperAsync();
+            _ = InitRoamingSettingsHelperAsync();
         }
 
         public async Task SaveNotesListAsync(NotesListModel notesList)
@@ -33,31 +35,31 @@ namespace ContosoNotes
             {
                 const string notesListFileName = "notesList.json";
 
-                await _localStorageHelper.SaveFileAsync(notesListFileName, notesList);
+                await _localStorage.SaveFileAsync(notesListFileName, notesList);
 
-                if (_roamingStorageHelper != null)
+                if (_remoteFileStorage != null)
                 {
-                    await _roamingStorageHelper.SaveFileAsync(notesListFileName, notesList);
+                    await _remoteFileStorage.CreateFileAsync(notesListFileName, notesList);
                 }
             }
         }
 
         public async Task SaveFileAsync<T>(string fileName, T value)
         {
-            await _localStorageHelper.SaveFileAsync(fileName, value);
+            await _localStorage.SaveFileAsync(fileName, value);
 
-            if (_roamingStorageHelper != null)
+            if (_remoteFileStorage != null)
             {
-                await _roamingStorageHelper.SaveFileAsync(fileName, value);
+                await _remoteFileStorage.CreateFileAsync(fileName, value);
             }
         }
 
         public async Task<NotePageModel> GetCurrentNotePageAsync(NotesListModel notesList)
         {
             // Check the settings for an active note page.
-            return _roamingStorageHelper != null
-                ? await GetCurrentNotePage(_roamingStorageHelper, notesList)
-                : await GetCurrentNotePage(_localStorageHelper, notesList);
+            return _remoteFileStorage != null && _remoteSettingsStorage != null
+                ? await GetCurrentNotePage(_remoteSettingsStorage, _remoteFileStorage, notesList)
+                : await GetCurrentNotePage(_localStorage, _localStorage, notesList);
         }
 
         public async Task<NotesListModel> GetNotesListAsync()
@@ -65,10 +67,12 @@ namespace ContosoNotes
             var notesListItems = new List<NotesListItemModel>();
             var notesListItemsDict = new Dictionary<string, int>();
 
+            await InitRoamingSettingsHelperAsync();
+
             bool updateNotesList = false;
 
             // Get any remote notes.
-            var remoteNotes = await GetNotesListAsync(_roamingStorageHelper);
+            var remoteNotes = await GetNotesListAsync(_remoteFileStorage);
             if (remoteNotes != null)
             {
                 for (var i = 0; i < remoteNotes.Items.Count; i++)
@@ -80,7 +84,7 @@ namespace ContosoNotes
             }
 
             // Get any local notes.
-            var localNotes = await GetNotesListAsync(_localStorageHelper);
+            var localNotes = await GetNotesListAsync(_localStorage);
             if (localNotes != null)
             {
                 foreach (var notesListItem in localNotes.Items)
@@ -116,13 +120,13 @@ namespace ContosoNotes
             {
                 string notePageFileName = GetNotePageFileName(currentNotePage);
 
-                await _localStorageHelper.SaveFileAsync(notePageFileName, currentNotePage);
-                _localStorageHelper.Save("currentNotePageId", currentNotePage.Id);
+                await _localStorage.SaveFileAsync(notePageFileName, currentNotePage);
+                _localStorage.Save("currentNotePageId", currentNotePage.Id);
 
-                if (_roamingStorageHelper != null)
+                if (_remoteFileStorage != null)
                 {
-                    await _roamingStorageHelper.SaveFileAsync(notePageFileName, currentNotePage);
-                    _roamingStorageHelper.Save("currentNotePageId", currentNotePage.Id);
+                    await _remoteFileStorage.CreateFileAsync(notePageFileName, currentNotePage);
+                    _remoteSettingsStorage.Save("currentNotePageId", currentNotePage.Id);
                 }
             }
         }
@@ -131,45 +135,35 @@ namespace ContosoNotes
         {
             var notePageFileName = GetNotePageFileName(notesListItemModel);
 
-            if (_roamingStorageHelper != null)
+            if (_remoteFileStorage != null)
             {
                 try
                 {
-                    return await _roamingStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
+                    return await _remoteFileStorage.ReadFileAsync<NotePageModel>(notePageFileName);
                 }
                 catch
                 {
                 }
             }
 
-            return await _localStorageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
+            return await _localStorage.ReadFileAsync<NotePageModel>(notePageFileName);
         }
 
-        private async Task<NotePageModel> GetCurrentNotePage(IObjectStorageHelper storageHelper, NotesListModel notesList)
+        private async Task<NotePageModel> GetCurrentNotePage(ISettingsStorageHelper<string> settingsStorage, IFileStorageHelper fileStorage, NotesListModel notesList)
         {
-            if (storageHelper == null)
+            if (fileStorage == null || settingsStorage == null)
             {
                 return null;
             }
 
-            string currentNotePageId = null;
-            try
-            {
-                currentNotePageId = storageHelper.Read<string>("currentNotePageId");
-            }
-            catch
-            {
-                // Current note page id is empty.
-            }
-
-            if (currentNotePageId != null)
+            if (settingsStorage.TryRead<string>("currentNotePageId", out string currentNotePageId) && currentNotePageId != null)
             {
                 foreach (var notesListItem in notesList.Items)
                 {
                     if (currentNotePageId == notesListItem.NotePageId)
                     {
                         string notePageFileName = GetNotePageFileName(notesListItem);
-                        return await storageHelper.ReadFileAsync<NotePageModel>(notePageFileName);
+                        return await fileStorage.ReadFileAsync<NotePageModel>(notePageFileName);
                     }
                 }
             }
@@ -177,7 +171,7 @@ namespace ContosoNotes
             return null;
         }
 
-        private async Task<NotesListModel> GetNotesListAsync(IObjectStorageHelper storageHelper)
+        private async Task<NotesListModel> GetNotesListAsync(IFileStorageHelper storageHelper)
         {
             if (storageHelper == null)
             {
@@ -192,7 +186,7 @@ namespace ContosoNotes
                 NotesListModel notesList = await storageHelper.ReadFileAsync<NotesListModel>(notesListFileName);
                 return notesList;
             }
-            catch
+            catch (System.Exception e)
             {
                 return null;
             }
@@ -208,19 +202,24 @@ namespace ContosoNotes
             return notesListItem.NotePageId + ".json";
         }
 
-        private async void InitRoamingSettingsHelper()
+        private async Task InitRoamingSettingsHelperAsync()
         {
-
             switch (ProviderManager.Instance?.GlobalProvider?.State)
             {
                 case ProviderState.SignedIn:
-                    var storageHelper = await RoamingSettingsHelper.CreateForCurrentUser(RoamingDataStore.OneDrive, false, true, _serializer);
-                    await storageHelper.Sync();
-                    _roamingStorageHelper = storageHelper;
+                    if (_remoteFileStorage == null)
+                    {
+                        _remoteFileStorage = await OneDriveStorageHelper.CreateForCurrentUserAsync(_serializer);
+                    }
+                    if (_remoteSettingsStorage == null)
+                    {
+                        _remoteSettingsStorage = await UserExtensionStorageHelper.CreateForCurrentUserAsync("ContosoNotes.json", _serializer);
+                    }
                     break;
 
                 case ProviderState.SignedOut:
-                    _roamingStorageHelper = null;
+                    _remoteFileStorage = null;
+                    _remoteSettingsStorage = null;
                     break;
             }
         }

@@ -244,28 +244,28 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Authentication.Uwp">
-      <Version>7.1.0-preview1</Version>
+      <Version>7.1.0-rc1.1</Version>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Graph.Uwp">
-      <Version>7.1.0-preview1</Version>
+      <Version>7.1.0-rc1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Graph">
-      <Version>4.0.0</Version>
+      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.12</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Mvvm">
-      <Version>7.1.0-preview1</Version>
+      <Version>7.1.0-rc1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI">
-      <Version>7.1.0-preview1</Version>
+      <Version>7.1.0-rc1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.6.1</Version>
+      <Version>2.6.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

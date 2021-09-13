@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Toolkit.Helpers;
-using Newtonsoft.Json;
 using System;
 using System.Reflection;
+using System.Text.Json;
 
 namespace ContosoNotes.Common
 {
@@ -14,11 +14,11 @@ namespace ContosoNotes.Common
     /// </summary>
     public class JsonObjectSerializer : IObjectSerializer
     {
-        private readonly JsonSerializerSettings _serializerSettings = new ()
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            Formatting = Formatting.Indented
-        };
+        //private readonly JsonSerializerSettings _serializerSettings = new ()
+        //{
+        //    TypeNameHandling = TypeNameHandling.Auto,
+        //    Formatting = Formatting.Indented
+        //};
 
         public T Deserialize<T>(string value)
         {
@@ -32,7 +32,7 @@ namespace ContosoNotes.Common
                 return (T)Convert.ChangeType(value, type);
             }
 
-            return JsonConvert.DeserializeObject<T>((string)value, _serializerSettings);
+            return JsonSerializer.Deserialize<T>((string)value);//, _serializerSettings);
         }
 
         public string Serialize<T>(T value)
@@ -47,7 +47,7 @@ namespace ContosoNotes.Common
                 return value.ToString();
             }
 
-            return JsonConvert.SerializeObject(value, _serializerSettings);
+            return JsonSerializer.Serialize(value);//, _serializerSettings);
         }
     }
 }

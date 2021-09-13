@@ -35,7 +35,7 @@ namespace ContosoNotes
             {
                 const string notesListFileName = "notesList.json";
 
-                await _localStorage.SaveFileAsync(notesListFileName, notesList);
+                await _localStorage.CreateFileAsync(notesListFileName, notesList);
 
                 if (_remoteFileStorage != null)
                 {
@@ -46,7 +46,7 @@ namespace ContosoNotes
 
         public async Task SaveFileAsync<T>(string fileName, T value)
         {
-            await _localStorage.SaveFileAsync(fileName, value);
+            await _localStorage.CreateFileAsync(fileName, value);
 
             if (_remoteFileStorage != null)
             {
@@ -120,7 +120,7 @@ namespace ContosoNotes
             {
                 string notePageFileName = GetNotePageFileName(currentNotePage);
 
-                await _localStorage.SaveFileAsync(notePageFileName, currentNotePage);
+                await _localStorage.CreateFileAsync(notePageFileName, currentNotePage);
                 _localStorage.Save("currentNotePageId", currentNotePage.Id);
 
                 if (_remoteFileStorage != null)

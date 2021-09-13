@@ -7,9 +7,9 @@ using CommunityToolkit.Graph.Extensions;
 using ContosoNotes.Common;
 using Microsoft.Graph;
 using Microsoft.Toolkit.Uwp.UI;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 using System.Threading;
 using Windows.System;
 
